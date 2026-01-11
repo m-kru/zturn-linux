@@ -1,0 +1,24 @@
+namespace eval zturn {
+  proc top {} {
+    hbs::SetTool "vivado-prj"
+    hbs::SetDevice "xc7z020clg400-1"
+    hbs::Eval {set_property target_language VHDL [current_project]}
+
+    hbs::AddFile gw/ps/processing_system.bd
+    hbs::Eval {make_wrapper -files [get_files processing_system.bd] -top}
+    hbs::AddFile gw/ps/hdl/processing_system_wrapper.vhd
+
+    hbs::AddFile gw/top.vhd
+    hbs::AddFile gw/constr/top.xdc
+
+    hbs::AddFile gw/constr/target.xdc
+    hbs::Eval {set_property target_constrs_file [get_files target.xdc] [current_fileset -constrset]}
+
+    hbs::SetTop "Top"
+    hbs::Run
+
+    hbs::Eval "write_hw_platform -fixed -include_bit -force -file $hbs::RunTargetBuildDir/$hbs::Top.xsa"
+  }
+
+  hbs::Register
+}
