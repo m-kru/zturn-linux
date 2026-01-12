@@ -4,7 +4,9 @@ library ieee;
 
 entity Top is
   port (
-    led_red_o : buffer std_logic := '1';
+    led_red_o   : buffer std_logic := '1';
+    led_green_o : buffer std_logic := '1';
+    led_blue_o  : buffer std_logic := '1';
 
     -- Fixed PS IO pins
     DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
