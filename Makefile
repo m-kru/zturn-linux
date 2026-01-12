@@ -2,13 +2,21 @@ default: help
 
 .PHONY: help
 help:
-	@echo "Build targets:"
+	@echo "Firmware targets:"
+	@echo "  setup-buildroot  Setup buildroot for work"
+	@echo "Gateware targets:"
 	@echo "  gw  Build gateware."
 	@echo "Other targets:"
 	@echo "  boot-bin  Generate boot.bin file."
 	@echo "  help      Print help message."
 
-# Build targets
+# Firmware targets
+
+.PHONY: setup-buildroot
+setup-buildroot:
+	./scripts/setup-buildroot.sh
+
+# Gateware targets
 
 .PHONY: gw
 gw:
