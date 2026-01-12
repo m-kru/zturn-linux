@@ -21,5 +21,5 @@ fi
 
 cd $BUILDROOT_DIR
 #cp ../../config/buildroot .config
-ln -s  ../../config/buildroot .config
+ln -s -f ../../config/buildroot .config
 #make

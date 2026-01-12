@@ -1,6 +1,6 @@
 zturn:
 {
 	[bootloader] fw/prebuilts/fsbl.elf
-	build/zturn--top/zturn--top.runs/impl_1/Top.bit
+	build/gw/zturn--top/zturn--top.runs/impl_1/Top.bit
 	fw/prebuilts/u-boot.elf
 }
