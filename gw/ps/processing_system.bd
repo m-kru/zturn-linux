@@ -970,22 +970,13 @@
             "value": "0"
           },
           "PCW_SD0_GRP_CD_ENABLE": {
-            "value": "1"
-          },
-          "PCW_SD0_GRP_CD_IO": {
-            "value": "MIO 46"
+            "value": "0"
           },
           "PCW_SD0_GRP_POW_ENABLE": {
-            "value": "1"
-          },
-          "PCW_SD0_GRP_POW_IO": {
-            "value": "MIO 0"
+            "value": "0"
           },
           "PCW_SD0_GRP_WP_ENABLE": {
-            "value": "1"
-          },
-          "PCW_SD0_GRP_WP_IO": {
-            "value": "MIO 47"
+            "value": "0"
           },
           "PCW_SD0_PERIPHERAL_ENABLE": {
             "value": "1"
