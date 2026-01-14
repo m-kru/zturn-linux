@@ -3,6 +3,12 @@
 set -eu
 
 #
+# Configuration variables
+#
+
+BUILDROOT_VERSION=2025.02.9
+
+#
 # Utility functions
 #
 
@@ -97,7 +103,24 @@ You must explicitly cd to the buildroot diretory and call make."
 COMMAND["buildroot-setup"]="buildroot_setup"
 
 buildroot_setup() {
-  scripts/setup-buildroot.sh
+  local buildroot_tar="buildroot-$BUILDROOT_VERSION.tar.gz"
+  local buildroot_dir="buildroot-$BUILDROOT_VERSION"
+
+  mkdir -p cache
+  cd cache
+  if [ ! -e $buildroot_tar ]; then
+    wget "https://buildroot.org/downloads/$buildroot_tar"
+  fi
+  cd ..
+
+  mkdir -p build
+  cd build
+  if [ ! -d $buildroot_dir ]; then
+    tar -xvf ../cache/$buildroot_tar
+  fi
+
+  cd $buildroot_dir
+  ln -s -f ../../config/buildroot .config
 }
 
 HELP["git-rm-ignored"]="Remove only files ignored by git.
