@@ -54,7 +54,7 @@ help() {
 }
 
 
-HELP["gw"]="Builds gateware."
+HELP["gw"]="Build gateware."
 COMMAND["gw"]="gw"
 
 gw() {

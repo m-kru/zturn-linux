@@ -10,11 +10,16 @@ namespace eval zturn {
     hbs::Eval {make_wrapper -files [get_files processing_system.bd] -top}
     hbs::AddFile gw/ps/hdl/processing_system_wrapper.vhd
 
+    hbs::AddFile gw/axi/axi-gp0-apb-bridge/axi_gp0_apb_bridge.xci
+    hbs::AddFile gw/axi/axi-gp0-axilite-bridge/axi_protocol_converter_0.xci
+
     hbs::AddFile gw/top.vhd
     hbs::AddFile gw/constr/top.xdc
 
     hbs::AddFile gw/constr/target.xdc
     hbs::Eval {set_property target_constrs_file [get_files target.xdc] [current_fileset -constrset]}
+
+    hbs::AddDep vhdl::amba5::apb::pkg::src
 
     hbs::SetTop "Top"
     hbs::Run
