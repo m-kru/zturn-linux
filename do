@@ -90,7 +90,7 @@ bootbin_cp() {
 }
 
 
-HELP["buildroot-setup"]="Sets up buildroot for Linux and rootfs compilation in the build directory.\n
+HELP["buildroot-setup"]="Set up buildroot for Linux and rootfs compilation in the build directory.\n
 The command automatically links .config to the valid configuration.
 The command does not start any compilation implicitly.
 You must explicitly cd to the buildroot diretory and call make."
@@ -98,6 +98,16 @@ COMMAND["buildroot-setup"]="buildroot_setup"
 
 buildroot_setup() {
   scripts/setup-buildroot.sh
+}
+
+HELP["git-rm-ignored"]="Remove only files ignored by git.\n
+Usage:
+  ./do git-rm-ignored [args]\n
+The args are simply forwarded to the 'git clean -fdX' command."
+COMMAND["git-rm-ignored"]="git_rm_ignored"
+
+git_rm_ignored() {
+  git clean -fdX "$@"
 }
 
 #
