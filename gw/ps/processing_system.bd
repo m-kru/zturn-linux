@@ -683,15 +683,6 @@
           "PCW_INCLUDE_ACP_TRANS_CHECK": {
             "value": "0"
           },
-          "PCW_MIO_0_IOTYPE": {
-            "value": "LVCMOS 3.3V"
-          },
-          "PCW_MIO_0_PULLUP": {
-            "value": "enabled"
-          },
-          "PCW_MIO_0_SLEW": {
-            "value": "slow"
-          },
           "PCW_MIO_40_IOTYPE": {
             "value": "LVCMOS 1.8V"
           },
@@ -746,24 +737,6 @@
           "PCW_MIO_45_SLEW": {
             "value": "slow"
           },
-          "PCW_MIO_46_IOTYPE": {
-            "value": "LVCMOS 1.8V"
-          },
-          "PCW_MIO_46_PULLUP": {
-            "value": "enabled"
-          },
-          "PCW_MIO_46_SLEW": {
-            "value": "slow"
-          },
-          "PCW_MIO_47_IOTYPE": {
-            "value": "LVCMOS 1.8V"
-          },
-          "PCW_MIO_47_PULLUP": {
-            "value": "enabled"
-          },
-          "PCW_MIO_47_SLEW": {
-            "value": "slow"
-          },
           "PCW_MIO_48_IOTYPE": {
             "value": "LVCMOS 1.8V"
           },
@@ -787,13 +760,12 @@
           },
           "PCW_MIO_TREE_PERIPHERALS": {
             "value": [
-              "SD",
-              "0#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#SD",
-              "0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#UART 1#UART 1#unassigned#unassigned#unassigned#unassigned"
+              "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#SD",
+              "0#SD 0#SD 0#SD 0#SD 0#SD 0#unassigned#unassigned#UART 1#UART 1#unassigned#unassigned#unassigned#unassigned"
             ]
           },
           "PCW_MIO_TREE_SIGNALS": {
-            "value": "sdio0_pow#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#clk#cmd#data[0]#data[1]#data[2]#data[3]#cd#wp#tx#rx#unassigned#unassigned#unassigned#unassigned"
+            "value": "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#clk#cmd#data[0]#data[1]#data[2]#data[3]#unassigned#unassigned#tx#rx#unassigned#unassigned#unassigned#unassigned"
           },
           "PCW_NAND_CYCLES_T_AR": {
             "value": "1"
