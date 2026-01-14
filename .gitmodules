@@ -1,0 +1,3 @@
+[submodule "gw/vhdl-amba5"]
+	path = gw/vhdl-amba5
+	url = https://github.com/m-kru/vhdl-amba5
