@@ -2,53 +2,83 @@
 
 set -eu
 
+#
+# Utility functions
+#
+
 die() {
   echo >&2 "$*"
   exit 1
 }
 
-help() { #doc: Print help message
+#
+# Commands
+#
+
+declare -A HELP
+declare -A COMMAND
+
+
+HELP["help"]="Print help message."
+COMMAND["help"]="help"
+
+help() {
   if [ $# -eq 0 ]; then
     printf "Usage:\n  %s <command> [args]\n\nAvailable commands:\n" "$0"
-    LANG=en_US.UTF_8
-    grep -E '^\w.+\(\) { #doc' "$0" \
-      | sed -e 's|() { #doc: |!|g' \
-      | sed -e 's|^|  |' \
-      | column -s"!" -t
+
+    local tmp=""
+    for cmd in "${!COMMAND[@]}"; do
+      local help=${HELP[$cmd]}
+      read -r help <<< "$help"
+      tmp+="  $cmd!$help"$'\n'
+    done
+
+    tmp=$(column -s "!" -t <<< "$tmp" | sort -k1,1)
+    echo "$tmp"
+
     return
   fi
 
-  local cmd=${1//-/_}
-  local cmd_help="${cmd}_help"
-
-  if [[ ! -v $cmd_help ]]; then
-    echo "no help for '$1'"
-    return
+  readonly cmd=$1
+  if [[ ! -v HELP["$cmd"] ]]; then
+    die "invalid command '$cmd'"
   fi
 
-  printf "%b" "${!cmd_help}"
+  printf "%b\n" "${HELP["$cmd"]}"
 }
 
-# shellcheck disable=SC2034
-gw_help="Builds gateware.\n"
 
-gw() { #doc: Build gateware
+HELP["gw"]="Builds gateware."
+COMMAND["gw"]="gw"
+
+gw() {
   hbs run zturn::top
 }
 
-# shellcheck disable=SC2034
-bootbin_help="Generates boot.bin file to the build directory.\n"
 
-bootbin() { #doc: Generate boot.bin file
+HELP["gw-rm"]="Remove build/gw directory."
+COMMAND["gw-rm"]="gw_rm"
+
+gw_rm() {
+  rm -rf build/gw
+}
+
+
+HELP["bootbin"]="Generate boot.bin file to the build directory."
+COMMAND["bootbin"]="bootbin"
+
+bootbin() {
   bootgen -arch zynq -image config/zturn.bif -w on -o build/boot.bin
 }
 
-# shellcheck disable=SC2034
-cp_bootbin_help="cp-bootbin partition\n
-Copies build/boot.bin to the provided partition.
-The command automatically mounts and unmounts the partition using the pmount command.\n"
 
-cp_bootbin() { #doc: Copy build/boot.bin to the provided partition
+HELP["bootbin-cp"]="Copy build/boot.bin to the provided partition.\n
+Usage:
+  ./do bootbin-cp partition\n
+The command automatically mounts and unmounts the partition using the pmount command."
+COMMAND["bootbin-cp"]="bootbin_cp"
+
+bootbin_cp() {
   if [ $# -lt 1 ]; then
     die "missing partition argument"
   fi
@@ -59,13 +89,20 @@ cp_bootbin() { #doc: Copy build/boot.bin to the provided partition
   pumount "/dev/$part"
 }
 
-# shellcheck disable=SC2034
-setup_buildroot_help="Sets up buildroot for Linux and rootfs compilation in the build directory.
+
+HELP["buildroot-setup"]="Sets up buildroot for Linux and rootfs compilation in the build directory.\n
 The command automatically links .config to the valid configuration.
 The command does not start any compilation implicitly.
-You must explicitly cd to the buildroot diretory and call make.\n"
+You must explicitly cd to the buildroot diretory and call make."
+COMMAND["buildroot-setup"]="buildroot_setup"
 
+buildroot_setup() {
+  scripts/setup-buildroot.sh
+}
+
+#
 # Start of script logic
+#
 
 if [ $# -lt 1 ]; then
   help "$@"
@@ -75,11 +112,8 @@ fi
 cmd=$1
 shift
 
-func="$cmd"
-func=${func//-/_}
-
-if ! declare -f "$func" > /dev/null; then
+if [[ ! -v COMMAND["$cmd"] ]]; then
   die "invalid command '$cmd'"
 fi
 
-$func "$@"
+"${COMMAND[$cmd]}" "$@"
