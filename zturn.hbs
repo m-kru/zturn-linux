@@ -21,6 +21,8 @@ namespace eval zturn {
 
     hbs::AddDep vhdl::amba5::apb::pkg::src
 
+    hbs::AddDep afbd::gen vhdl-apb -path build/afbd json -path build/afbd fbd/main.fbd
+
     hbs::SetTop "Top"
     hbs::Run
 

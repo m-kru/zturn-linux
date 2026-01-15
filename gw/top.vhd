@@ -5,6 +5,8 @@ library ieee;
 library lapb;
   use lapb.apb;
 
+library afbd;
+
 
 entity Top is
   port (
@@ -45,6 +47,7 @@ architecture Main of Top is
   constant FCLK0_FREQ : natural := 50_000_000;
 
   signal fclk0 : std_logic;
+  signal fclk_reset0_n : std_logic;
 
   -- Master GP0 AXI
   signal m_gp0_axi_araddr  : std_logic_vector(31 downto 0);
@@ -108,6 +111,7 @@ architecture Main of Top is
   signal m_gp0_axil_rready  : std_logic;
 
   -- Master GP0 APB
+  signal m_gp0_apb_addr : std_logic_vector(31 downto 0);
   signal m_gp0_apb_req : apb.requester_out_t;
   signal m_gp0_apb_com : apb.completer_out_t;
 
@@ -119,7 +123,7 @@ begin
   begin
     if rising_edge(fclk0) then
       if cnt = 0 then
-        led_red_o <= not led_red_o;
+        led_green_o <= not led_green_o;
         cnt := CNT_MAX;
       else
         cnt := cnt - 1;
@@ -128,11 +132,24 @@ begin
   end process;
 
 
+  AFBD_Main : entity afbd.Main
+  port map (
+    clk_i => fclk0,
+    rst_i => '0',
+    apb_coms_i(0) => m_gp0_apb_req,
+    apb_coms_o(0) => m_gp0_apb_com,
+
+    Write_Read_Test_o => open,
+    Led_Red_o(0)  => led_red_o,
+    Led_Blue_o(0) => led_blue_o
+  );
+
+
   m_gp0_axi_apb_bridge : entity work.axi_gp0_apb_bridge
   port map (
     -- AXI port
     s_axi_aclk    => fclk0,
-    s_axi_aresetn => '1',
+    s_axi_aresetn => fclk_reset0_n,
     s_axi_awaddr  => m_gp0_axil_awaddr,
     s_axi_awvalid => m_gp0_axil_awvalid,
     s_axi_awready => m_gp0_axil_awready,
@@ -164,8 +181,9 @@ begin
   m_gp0_axi_axilite_bridge : entity work.axi_protocol_converter_0
   port map (
     aclk    => fclk0,
-    aresetn => '1',
+    aresetn => fclk_reset0_n,
     -- AXI port
+    s_axi_awid     => m_gp0_axi_awid,
     s_axi_awaddr   => m_gp0_axi_awaddr,
     s_axi_awlen    => m_gp0_axi_awlen,
     s_axi_awsize   => m_gp0_axi_awsize,
@@ -176,14 +194,17 @@ begin
     s_axi_awqos    => m_gp0_axi_awqos,
     s_axi_awvalid  => m_gp0_axi_awvalid,
     s_axi_awready  => m_gp0_axi_awready,
+    s_axi_wid      => m_gp0_axi_wid,
     s_axi_wdata    => m_gp0_axi_wdata,
     s_axi_wstrb    => m_gp0_axi_wstrb,
     s_axi_wlast    => m_gp0_axi_wlast,
     s_axi_wvalid   => m_gp0_axi_wvalid,
     s_axi_wready   => m_gp0_axi_wready,
+    s_axi_bid      => m_gp0_axi_bid,
     s_axi_bresp    => m_gp0_axi_bresp,
     s_axi_bvalid   => m_gp0_axi_bvalid,
     s_axi_bready   => m_gp0_axi_bready,
+    s_axi_arid     => m_gp0_axi_arid,
     s_axi_araddr   => m_gp0_axi_araddr,
     s_axi_arlen    => m_gp0_axi_arlen,
     s_axi_arsize   => m_gp0_axi_arsize,
@@ -194,6 +215,7 @@ begin
     s_axi_arqos    => m_gp0_axi_arqos,
     s_axi_arvalid  => m_gp0_axi_arvalid,
     s_axi_arready  => m_gp0_axi_arready,
+    s_axi_rid      => m_gp0_axi_rid,
     s_axi_rdata    => m_gp0_axi_rdata,
     s_axi_rresp    => m_gp0_axi_rresp,
     s_axi_rlast    => m_gp0_axi_rlast,
@@ -225,7 +247,7 @@ begin
   processing_system : entity work.processing_system_wrapper
   port map (
     FCLK_CLK0 => fclk0,
-    FCLK_RESET0_N => open,
+    FCLK_RESET0_N => fclk_reset0_n,
 
     DDR_addr    => DDR_addr,
     DDR_ba      => DDR_ba,

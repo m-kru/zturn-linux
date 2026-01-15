@@ -1,0 +1,62 @@
+# This file comes from https://github.com/Functional-Bus-Description-Language/afbd.
+
+namespace eval afbd {
+  proc _getVhdlFilesDir {args} {
+    set dir ""
+    set target ""
+    set isPath 0
+
+    foreach arg $args {
+      if {$isPath} {
+        set dir $arg
+        set isPath 0
+        continue
+      }
+
+      switch $arg {
+        "c-sync" -
+        "json" -
+        "python" -
+        "vhdl-apb" {
+          set target $arg
+        }
+        "-path" {
+          if {$target == "" || $target == "vhdl-apb"} {
+            set isPath 1
+          }
+        }
+      }
+    }
+
+    return [pwd]/$dir
+  }
+
+  proc gen {args} {
+    exec afbd {*}$args
+
+    set vhdlFilesDir [_getVhdlFilesDir {*}$args]
+    if {$vhdlFilesDir != ""} {
+      hbs::AddDep vhdl-types::src
+
+      if {"-shared-bus" in $args} {
+        hbs::AddDep vhdl::amba5::apb::shared-bus::src
+      } else {
+        hbs::AddDep vhdl::amba5::apb::crossbar::src
+      }
+
+      hbs::SetLib "afbd"
+
+      # apb.vhd must be analyzed as the first one
+      hbs::AddFile "$vhdlFilesDir/apb.vhd"
+      set files [glob "$vhdlFilesDir/*.vhd"]
+      foreach file $files {
+        if {[file tail $file] == "apb.vhd"} {
+          continue
+        }
+        hbs::AddFile $file
+      }
+    }
+  }
+
+  hbs::Register
+}

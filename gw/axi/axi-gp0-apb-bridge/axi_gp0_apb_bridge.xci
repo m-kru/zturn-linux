@@ -38,8 +38,8 @@
         "C_S_AXI_RNG3_BASEADDR": [ { "value": "0x0000000020000000", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "C_S_AXI_RNG2_HIGHADDR": [ { "value": "0x000000001FFFFFFF", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "C_S_AXI_RNG2_BASEADDR": [ { "value": "0x0000000010000000", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
-        "C_HIGHADDR": [ { "value": "0x000000007FFFFFFF", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
-        "C_BASEADDR": [ { "value": "0x0000000040000000", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
+        "C_HIGHADDR": [ { "value": "0x000000003FFFFFFF", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
+        "C_BASEADDR": [ { "value": "0x0000000000000000", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "C_M_APB_PROTOCOL": [ { "value": "apb3", "resolve_type": "user", "usage": "all" } ],
         "C_APB_NUM_SLAVES": [ { "value": "1", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "C_ADDR_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "usage": "all" } ],
@@ -54,8 +54,8 @@
         "C_M_APB_DATA_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_APB_NUM_SLAVES": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_M_APB_PROTOCOL": [ { "value": "apb3", "resolve_type": "generated", "usage": "all" } ],
-        "C_BASEADDR": [ { "value": "0x0000000040000000", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
-        "C_HIGHADDR": [ { "value": "0x000000007FFFFFFF", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
+        "C_BASEADDR": [ { "value": "0x0000000000000000", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
+        "C_HIGHADDR": [ { "value": "0x000000003FFFFFFF", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
         "C_S_AXI_RNG2_BASEADDR": [ { "value": "0x0000000010000000", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
         "C_S_AXI_RNG2_HIGHADDR": [ { "value": "0x000000001FFFFFFF", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
         "C_S_AXI_RNG3_BASEADDR": [ { "value": "0x0000000020000000", "resolve_type": "generated", "format": "bitString", "usage": "all" } ],
@@ -246,5 +246,5 @@
       }
     }
   },
-  "checksum": "e0049979"
+  "checksum": "6592a2d6"
 }
