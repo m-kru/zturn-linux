@@ -178,7 +178,7 @@ begin
   );
 
 
-  m_gp0_axi_axilite_bridge : entity work.axi_protocol_converter_0
+  m_gp0_axi_axilite_bridge : entity work.m_gp0_axi_axilite_bridge
   port map (
     aclk    => fclk0,
     aresetn => fclk_reset0_n,
