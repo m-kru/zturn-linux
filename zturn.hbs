@@ -10,7 +10,7 @@ namespace eval zturn {
     hbs::Eval {make_wrapper -files [get_files processing_system.bd] -top}
     hbs::AddFile gw/ps/hdl/processing_system_wrapper.vhd
 
-    hbs::AddFile gw/axi/axi-gp0-apb-bridge/axi_gp0_apb_bridge.xci
+    hbs::AddFile gw/axi/m-gp0-axilite-apb3-bridge/m_gp0_axilite_apb3_bridge.xci
     hbs::AddFile gw/axi/m-gp0-axi-axilite-bridge/m_gp0_axi_axilite_bridge.xci
 
     hbs::AddFile gw/top.vhd

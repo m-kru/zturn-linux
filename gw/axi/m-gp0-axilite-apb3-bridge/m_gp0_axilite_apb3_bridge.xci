@@ -1,10 +1,10 @@
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "axi_gp0_apb_bridge",
+    "xci_name": "m_gp0_axilite_apb3_bridge",
     "component_reference": "xilinx.com:ip:axi_apb_bridge:3.0",
     "ip_revision": "21",
-    "gen_directory": "../../../../zturn--top.gen/sources_1/ip/axi_gp0_apb_bridge",
+    "gen_directory": "../../../../zturn--top.gen/sources_1/ip/m_gp0_axilite_apb3_bridge",
     "parameters": {
       "component_parameters": {
         "C_DPHASE_TIMEOUT": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
@@ -43,7 +43,7 @@
         "C_M_APB_PROTOCOL": [ { "value": "apb3", "resolve_type": "user", "usage": "all" } ],
         "C_APB_NUM_SLAVES": [ { "value": "1", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "C_ADDR_WIDTH": [ { "value": "32", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "Component_Name": [ { "value": "axi_gp0_apb_bridge", "resolve_type": "user", "usage": "all" } ]
+        "Component_Name": [ { "value": "m_gp0_axilite_apb3_bridge", "resolve_type": "user", "usage": "all" } ]
       },
       "model_parameters": {
         "C_FAMILY": [ { "value": "zynq", "resolve_type": "generated", "usage": "all" } ],
@@ -105,7 +105,7 @@
         "IPCONTEXT": [ { "value": "IP_Flow" } ],
         "IPREVISION": [ { "value": "21" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../zturn--top.gen/sources_1/ip/axi_gp0_apb_bridge" } ],
+        "OUTPUTDIR": [ { "value": "../../../../zturn--top.gen/sources_1/ip/m_gp0_axilite_apb3_bridge" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
         "SWVERSION": [ { "value": "2025.2" } ],
@@ -246,5 +246,5 @@
       }
     }
   },
-  "checksum": "6592a2d6"
+  "checksum": "8df3e770"
 }

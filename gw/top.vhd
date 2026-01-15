@@ -145,7 +145,7 @@ begin
   );
 
 
-  m_gp0_axi_apb_bridge : entity work.axi_gp0_apb_bridge
+  m_gp0_axilite_apb3_bridge : entity work.m_gp0_axilite_apb3_bridge
   port map (
     -- AXI port
     s_axi_aclk    => fclk0,
