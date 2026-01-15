@@ -133,6 +133,14 @@ git_rm_ignored() {
   git clean -fdX "$@"
 }
 
+HELP["bootscr"]="Compile boot script for U-Boot."
+COMMAND["bootscr"]="bootscr"
+
+bootscr() {
+  mkdir -p build
+  mkimage -A arm -T script -C none -n 'Start script' -d fw/boot/boot.txt build/boot.scr
+}
+
 #
 # Start of script logic
 #
