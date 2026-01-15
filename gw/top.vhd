@@ -12,7 +12,7 @@ entity Top is
     led_green_o : buffer std_logic := '1';
     led_blue_o  : buffer std_logic := '1';
 
-    -- Fixed PS IO pins
+    -- DDR interface
     DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
     DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
     DDR_cas_n : inout STD_LOGIC;
@@ -28,6 +28,8 @@ entity Top is
     DDR_ras_n : inout STD_LOGIC;
     DDR_reset_n : inout STD_LOGIC;
     DDR_we_n : inout STD_LOGIC;
+
+    -- Fixed PS IO pins
     FIXED_IO_ddr_vrn : inout STD_LOGIC;
     FIXED_IO_ddr_vrp : inout STD_LOGIC;
     FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
@@ -44,71 +46,70 @@ architecture Main of Top is
 
   signal fclk0 : std_logic;
 
-  -- General purpose AXI Master 0
-  signal M_AXI_GP0_araddr  :  STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal M_AXI_GP0_arburst :  STD_LOGIC_VECTOR ( 1 downto 0 );
-  signal M_AXI_GP0_arcache :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_arid    :  STD_LOGIC_VECTOR ( 11 downto 0 );
-  signal M_AXI_GP0_arlen   :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_arlock  :  STD_LOGIC_VECTOR ( 1 downto 0 );
-  signal M_AXI_GP0_arprot  :  STD_LOGIC_VECTOR ( 2 downto 0 );
-  signal M_AXI_GP0_arqos   :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_arready :  STD_LOGIC;
-  signal M_AXI_GP0_arsize  :  STD_LOGIC_VECTOR ( 2 downto 0 );
-  signal M_AXI_GP0_arvalid :  STD_LOGIC;
-  signal M_AXI_GP0_awaddr  :  STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal M_AXI_GP0_awburst :  STD_LOGIC_VECTOR ( 1 downto 0 );
-  signal M_AXI_GP0_awcache :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_awid    :  STD_LOGIC_VECTOR ( 11 downto 0 );
-  signal M_AXI_GP0_awlen   :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_awlock  :  STD_LOGIC_VECTOR ( 1 downto 0 );
-  signal M_AXI_GP0_awprot  :  STD_LOGIC_VECTOR ( 2 downto 0 );
-  signal M_AXI_GP0_awqos   :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_awready :  STD_LOGIC;
-  signal M_AXI_GP0_awsize  :  STD_LOGIC_VECTOR ( 2 downto 0 );
-  signal M_AXI_GP0_awvalid :  STD_LOGIC;
-  signal M_AXI_GP0_bid     :  STD_LOGIC_VECTOR ( 11 downto 0 );
-  signal M_AXI_GP0_bready  :  STD_LOGIC;
-  signal M_AXI_GP0_bresp   :  STD_LOGIC_VECTOR ( 1 downto 0 );
-  signal M_AXI_GP0_bvalid  :  STD_LOGIC;
-  signal M_AXI_GP0_rdata   :  STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal M_AXI_GP0_rid     :  STD_LOGIC_VECTOR ( 11 downto 0 );
-  signal M_AXI_GP0_rlast   :  STD_LOGIC;
-  signal M_AXI_GP0_rready  :  STD_LOGIC;
-  signal M_AXI_GP0_rresp   :  STD_LOGIC_VECTOR ( 1 downto 0 );
-  signal M_AXI_GP0_rvalid  :  STD_LOGIC;
-  signal M_AXI_GP0_wdata   :  STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal M_AXI_GP0_wid     :  STD_LOGIC_VECTOR ( 11 downto 0 );
-  signal M_AXI_GP0_wlast   :  STD_LOGIC;
-  signal M_AXI_GP0_wready  :  STD_LOGIC;
-  signal M_AXI_GP0_wstrb   :  STD_LOGIC_VECTOR ( 3 downto 0 );
-  signal M_AXI_GP0_wvalid  :  STD_LOGIC;
+  -- Master GP0 AXI
+  signal m_gp0_axi_araddr  : std_logic_vector(31 downto 0);
+  signal m_gp0_axi_arburst : std_logic_vector( 1 downto 0);
+  signal m_gp0_axi_arcache : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_arid    : std_logic_vector(11 downto 0);
+  signal m_gp0_axi_arlen   : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_arlock  : std_logic_vector( 1 downto 0);
+  signal m_gp0_axi_arprot  : std_logic_vector( 2 downto 0);
+  signal m_gp0_axi_arqos   : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_arready : std_logic;
+  signal m_gp0_axi_arsize  : std_logic_vector( 2 downto 0);
+  signal m_gp0_axi_arvalid : std_logic;
+  signal m_gp0_axi_awaddr  : std_logic_vector(31 downto 0);
+  signal m_gp0_axi_awburst : std_logic_vector( 1 downto 0);
+  signal m_gp0_axi_awcache : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_awid    : std_logic_vector(11 downto 0);
+  signal m_gp0_axi_awlen   : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_awlock  : std_logic_vector( 1 downto 0);
+  signal m_gp0_axi_awprot  : std_logic_vector( 2 downto 0);
+  signal m_gp0_axi_awqos   : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_awready : std_logic;
+  signal m_gp0_axi_awsize  : std_logic_vector( 2 downto 0);
+  signal m_gp0_axi_awvalid : std_logic;
+  signal m_gp0_axi_bid     : std_logic_vector(11 downto 0);
+  signal m_gp0_axi_bready  : std_logic;
+  signal m_gp0_axi_bresp   : std_logic_vector( 1 downto 0);
+  signal m_gp0_axi_bvalid  : std_logic;
+  signal m_gp0_axi_rdata   : std_logic_vector(31 downto 0);
+  signal m_gp0_axi_rid     : std_logic_vector(11 downto 0);
+  signal m_gp0_axi_rlast   : std_logic;
+  signal m_gp0_axi_rready  : std_logic;
+  signal m_gp0_axi_rresp   : std_logic_vector( 1 downto 0);
+  signal m_gp0_axi_rvalid  : std_logic;
+  signal m_gp0_axi_wdata   : std_logic_vector(31 downto 0);
+  signal m_gp0_axi_wid     : std_logic_vector(11 downto 0);
+  signal m_gp0_axi_wlast   : std_logic;
+  signal m_gp0_axi_wready  : std_logic;
+  signal m_gp0_axi_wstrb   : std_logic_vector( 3 downto 0);
+  signal m_gp0_axi_wvalid  : std_logic;
 
-  -- AXI Lite GP0
-  signal m_axilite_gp0_awaddr : STD_LOGIC_VECTOR(31 DOWNTO 0);
-  signal m_axilite_gp0_awprot : STD_LOGIC_VECTOR(2 DOWNTO 0);
-  signal m_axilite_gp0_awvalid : STD_LOGIC;
-  signal m_axilite_gp0_awready : STD_LOGIC;
-  signal m_axilite_gp0_wdata : STD_LOGIC_VECTOR(31 DOWNTO 0);
-  signal m_axilite_gp0_wstrb : STD_LOGIC_VECTOR(3 DOWNTO 0);
-  signal m_axilite_gp0_wvalid : STD_LOGIC;
-  signal m_axilite_gp0_wready : STD_LOGIC;
-  signal m_axilite_gp0_bresp : STD_LOGIC_VECTOR(1 DOWNTO 0);
-  signal m_axilite_gp0_bvalid : STD_LOGIC;
-  signal m_axilite_gp0_bready : STD_LOGIC;
-  signal m_axilite_gp0_araddr : STD_LOGIC_VECTOR(31 DOWNTO 0);
-  signal m_axilite_gp0_arprot : STD_LOGIC_VECTOR(2 DOWNTO 0);
-  signal m_axilite_gp0_arvalid : STD_LOGIC;
-  signal m_axilite_gp0_arready : STD_LOGIC;
-  signal m_axilite_gp0_rdata : STD_LOGIC_VECTOR(31 DOWNTO 0);
-  signal m_axilite_gp0_rresp : STD_LOGIC_VECTOR(1 DOWNTO 0);
-  signal m_axilite_gp0_rvalid : STD_LOGIC;
-  signal m_axilite_gp0_rready : STD_LOGIC;
+  -- Master GP0 AXI Lite
+  signal m_gp0_axil_awaddr  : std_logic_vector(31 downto 0);
+  signal m_gp0_axil_awprot  : std_logic_vector( 2 downto 0);
+  signal m_gp0_axil_awvalid : std_logic;
+  signal m_gp0_axil_awready : std_logic;
+  signal m_gp0_axil_wdata   : std_logic_vector(31 downto 0);
+  signal m_gp0_axil_wstrb   : std_logic_vector( 3 downto 0);
+  signal m_gp0_axil_wvalid  : std_logic;
+  signal m_gp0_axil_wready  : std_logic;
+  signal m_gp0_axil_bresp   : std_logic_vector(1 downto 0);
+  signal m_gp0_axil_bvalid  : std_logic;
+  signal m_gp0_axil_bready  : std_logic;
+  signal m_gp0_axil_araddr  : std_logic_vector(31 downto 0);
+  signal m_gp0_axil_arprot  : std_logic_vector( 2 downto 0);
+  signal m_gp0_axil_arvalid : std_logic;
+  signal m_gp0_axil_arready : std_logic;
+  signal m_gp0_axil_rdata   : std_logic_vector(31 downto 0);
+  signal m_gp0_axil_rresp   : std_logic_vector( 1 downto 0);
+  signal m_gp0_axil_rvalid  : std_logic;
+  signal m_gp0_axil_rready  : std_logic;
 
-  -- APB GP0
-  signal m_apb_paddr : std_logic_vector(31 downto 0);
-  signal apb_gp0_req : apb.requester_out_t;
-  signal apb_gp0_com : apb.completer_out_t;
+  -- Master GP0 APB
+  signal m_gp0_apb_req : apb.requester_out_t;
+  signal m_gp0_apb_com : apb.completer_out_t;
 
 begin
 
@@ -127,98 +128,97 @@ begin
   end process;
 
 
-  axi_gp0_apb_bridge : entity work.axi_gp0_apb_bridge
+  m_gp0_axi_apb_bridge : entity work.axi_gp0_apb_bridge
   port map (
     -- AXI port
     s_axi_aclk    => fclk0,
     s_axi_aresetn => '1',
-    s_axi_awaddr  => m_axilite_gp0_awaddr,
-    s_axi_awvalid => m_axilite_gp0_awvalid,
-    s_axi_awready => m_axilite_gp0_awready,
-    s_axi_wdata   => m_axilite_gp0_wdata,
-    s_axi_wvalid  => m_axilite_gp0_wvalid,
-    s_axi_wready  => m_axilite_gp0_wready,
-    s_axi_bresp   => m_axilite_gp0_bresp,
-    s_axi_bvalid  => m_axilite_gp0_bvalid,
-    s_axi_bready  => m_axilite_gp0_bready,
-    s_axi_araddr  => m_axilite_gp0_araddr,
-    s_axi_arvalid => m_axilite_gp0_arvalid,
-    s_axi_arready => m_axilite_gp0_arready,
-    s_axi_rdata   => m_axilite_gp0_rdata,
-    s_axi_rresp   => m_axilite_gp0_rresp,
-    s_axi_rvalid  => m_axilite_gp0_rvalid,
-    s_axi_rready  => m_axilite_gp0_rready,
+    s_axi_awaddr  => m_gp0_axil_awaddr,
+    s_axi_awvalid => m_gp0_axil_awvalid,
+    s_axi_awready => m_gp0_axil_awready,
+    s_axi_wdata   => m_gp0_axil_wdata,
+    s_axi_wvalid  => m_gp0_axil_wvalid,
+    s_axi_wready  => m_gp0_axil_wready,
+    s_axi_bresp   => m_gp0_axil_bresp,
+    s_axi_bvalid  => m_gp0_axil_bvalid,
+    s_axi_bready  => m_gp0_axil_bready,
+    s_axi_araddr  => m_gp0_axil_araddr,
+    s_axi_arvalid => m_gp0_axil_arvalid,
+    s_axi_arready => m_gp0_axil_arready,
+    s_axi_rdata   => m_gp0_axil_rdata,
+    s_axi_rresp   => m_gp0_axil_rresp,
+    s_axi_rvalid  => m_gp0_axil_rvalid,
+    s_axi_rready  => m_gp0_axil_rready,
     -- APB port
-    m_apb_paddr      => m_apb_paddr,
-    m_apb_psel(0)    => apb_gp0_req.selx,
-    m_apb_penable    => apb_gp0_req.enable,
-    m_apb_pwrite     => apb_gp0_req.write,
-    m_apb_pwdata     => apb_gp0_req.wdata,
-    m_apb_pready(0)  => apb_gp0_com.ready,
-    m_apb_prdata     => apb_gp0_com.rdata,
-    m_apb_pslverr(0) => apb_gp0_com.slverr
+    unsigned(m_apb_paddr) => m_gp0_apb_req.addr,
+    m_apb_psel(0)    => m_gp0_apb_req.selx,
+    m_apb_penable    => m_gp0_apb_req.enable,
+    m_apb_pwrite     => m_gp0_apb_req.write,
+    m_apb_pwdata     => m_gp0_apb_req.wdata,
+    m_apb_pready(0)  => m_gp0_apb_com.ready,
+    m_apb_prdata     => m_gp0_apb_com.rdata,
+    m_apb_pslverr(0) => m_gp0_apb_com.slverr
   );
-  apb_gp0_req.addr <= unsigned(m_apb_paddr);
 
 
-  axi_axilite_bridge : entity work.axi_protocol_converter_0
+  m_gp0_axi_axilite_bridge : entity work.axi_protocol_converter_0
   port map (
     aclk    => fclk0,
     aresetn => '1',
     -- AXI port
-    s_axi_awaddr   => M_AXI_GP0_awaddr,
-    s_axi_awlen    => M_AXI_GP0_awlen,
-    s_axi_awsize   => M_AXI_GP0_awsize,
-    s_axi_awburst  => M_AXI_GP0_awburst,
-    s_axi_awlock   => M_AXI_GP0_awlock,
-    s_axi_awcache  => M_AXI_GP0_awcache,
-    s_axi_awprot   => M_AXI_GP0_awprot,
-    s_axi_awqos    => M_AXI_GP0_awqos,
-    s_axi_awvalid  => M_AXI_GP0_awvalid,
-    s_axi_awready  => M_AXI_GP0_awready,
-    s_axi_wdata    => M_AXI_GP0_wdata,
-    s_axi_wstrb    => M_AXI_GP0_wstrb,
-    s_axi_wlast    => M_AXI_GP0_wlast,
-    s_axi_wvalid   => M_AXI_GP0_wvalid,
-    s_axi_wready   => M_AXI_GP0_wready,
-    s_axi_bresp    => M_AXI_GP0_bresp,
-    s_axi_bvalid   => M_AXI_GP0_bvalid,
-    s_axi_bready   => M_AXI_GP0_bready,
-    s_axi_araddr   => M_AXI_GP0_araddr,
-    s_axi_arlen    => M_AXI_GP0_arlen,
-    s_axi_arsize   => M_AXI_GP0_arsize,
-    s_axi_arburst  => M_AXI_GP0_arburst,
-    s_axi_arlock   => M_AXI_GP0_arlock,
-    s_axi_arcache  => M_AXI_GP0_arcache,
-    s_axi_arprot   => M_AXI_GP0_arprot,
-    s_axi_arqos    => M_AXI_GP0_arqos,
-    s_axi_arvalid  => M_AXI_GP0_arvalid,
-    s_axi_arready  => M_AXI_GP0_arready,
-    s_axi_rdata    => M_AXI_GP0_rdata,
-    s_axi_rresp    => M_AXI_GP0_rresp,
-    s_axi_rlast    => M_AXI_GP0_rlast,
-    s_axi_rvalid   => M_AXI_GP0_rvalid,
-    s_axi_rready   => M_AXI_GP0_rready,
+    s_axi_awaddr   => m_gp0_axi_awaddr,
+    s_axi_awlen    => m_gp0_axi_awlen,
+    s_axi_awsize   => m_gp0_axi_awsize,
+    s_axi_awburst  => m_gp0_axi_awburst,
+    s_axi_awlock   => m_gp0_axi_awlock,
+    s_axi_awcache  => m_gp0_axi_awcache,
+    s_axi_awprot   => m_gp0_axi_awprot,
+    s_axi_awqos    => m_gp0_axi_awqos,
+    s_axi_awvalid  => m_gp0_axi_awvalid,
+    s_axi_awready  => m_gp0_axi_awready,
+    s_axi_wdata    => m_gp0_axi_wdata,
+    s_axi_wstrb    => m_gp0_axi_wstrb,
+    s_axi_wlast    => m_gp0_axi_wlast,
+    s_axi_wvalid   => m_gp0_axi_wvalid,
+    s_axi_wready   => m_gp0_axi_wready,
+    s_axi_bresp    => m_gp0_axi_bresp,
+    s_axi_bvalid   => m_gp0_axi_bvalid,
+    s_axi_bready   => m_gp0_axi_bready,
+    s_axi_araddr   => m_gp0_axi_araddr,
+    s_axi_arlen    => m_gp0_axi_arlen,
+    s_axi_arsize   => m_gp0_axi_arsize,
+    s_axi_arburst  => m_gp0_axi_arburst,
+    s_axi_arlock   => m_gp0_axi_arlock,
+    s_axi_arcache  => m_gp0_axi_arcache,
+    s_axi_arprot   => m_gp0_axi_arprot,
+    s_axi_arqos    => m_gp0_axi_arqos,
+    s_axi_arvalid  => m_gp0_axi_arvalid,
+    s_axi_arready  => m_gp0_axi_arready,
+    s_axi_rdata    => m_gp0_axi_rdata,
+    s_axi_rresp    => m_gp0_axi_rresp,
+    s_axi_rlast    => m_gp0_axi_rlast,
+    s_axi_rvalid   => m_gp0_axi_rvalid,
+    s_axi_rready   => m_gp0_axi_rready,
     -- AXI Lite port
-    m_axi_awaddr  => m_axilite_gp0_awaddr,
-    m_axi_awprot  => m_axilite_gp0_awprot,
-    m_axi_awvalid => m_axilite_gp0_awvalid,
-    m_axi_awready => m_axilite_gp0_awready,
-    m_axi_wdata   => m_axilite_gp0_wdata,
-    m_axi_wstrb   => m_axilite_gp0_wstrb,
-    m_axi_wvalid  => m_axilite_gp0_wvalid,
-    m_axi_wready  => m_axilite_gp0_wready,
-    m_axi_bresp   => m_axilite_gp0_bresp,
-    m_axi_bvalid  => m_axilite_gp0_bvalid,
-    m_axi_bready  => m_axilite_gp0_bready,
-    m_axi_araddr  => m_axilite_gp0_araddr,
-    m_axi_arprot  => m_axilite_gp0_arprot,
-    m_axi_arvalid => m_axilite_gp0_arvalid,
-    m_axi_arready => m_axilite_gp0_arready,
-    m_axi_rdata   => m_axilite_gp0_rdata,
-    m_axi_rresp   => m_axilite_gp0_rresp,
-    m_axi_rvalid  => m_axilite_gp0_rvalid,
-    m_axi_rready  => m_axilite_gp0_rready
+    m_axi_awaddr  => m_gp0_axil_awaddr,
+    m_axi_awprot  => m_gp0_axil_awprot,
+    m_axi_awvalid => m_gp0_axil_awvalid,
+    m_axi_awready => m_gp0_axil_awready,
+    m_axi_wdata   => m_gp0_axil_wdata,
+    m_axi_wstrb   => m_gp0_axil_wstrb,
+    m_axi_wvalid  => m_gp0_axil_wvalid,
+    m_axi_wready  => m_gp0_axil_wready,
+    m_axi_bresp   => m_gp0_axil_bresp,
+    m_axi_bvalid  => m_gp0_axil_bvalid,
+    m_axi_bready  => m_gp0_axil_bready,
+    m_axi_araddr  => m_gp0_axil_araddr,
+    m_axi_arprot  => m_gp0_axil_arprot,
+    m_axi_arvalid => m_gp0_axil_arvalid,
+    m_axi_arready => m_gp0_axil_arready,
+    m_axi_rdata   => m_gp0_axil_rdata,
+    m_axi_rresp   => m_gp0_axil_rresp,
+    m_axi_rvalid  => m_gp0_axil_rvalid,
+    m_axi_rready  => m_gp0_axil_rready
   );
 
 
@@ -251,44 +251,44 @@ begin
     FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
 
     M_AXI_GP0_ACLK    => fclk0,
-    M_AXI_GP0_araddr  => M_AXI_GP0_araddr,
-    M_AXI_GP0_arburst => M_AXI_GP0_arburst,
-    M_AXI_GP0_arcache => M_AXI_GP0_arcache,
-    M_AXI_GP0_arid    => M_AXI_GP0_arid,
-    M_AXI_GP0_arlen   => M_AXI_GP0_arlen,
-    M_AXI_GP0_arlock  => M_AXI_GP0_arlock,
-    M_AXI_GP0_arprot  => M_AXI_GP0_arprot,
-    M_AXI_GP0_arqos   => M_AXI_GP0_arqos,
-    M_AXI_GP0_arready => M_AXI_GP0_arready,
-    M_AXI_GP0_arsize  => M_AXI_GP0_arsize,
-    M_AXI_GP0_arvalid => M_AXI_GP0_arvalid,
-    M_AXI_GP0_awaddr  => M_AXI_GP0_awaddr,
-    M_AXI_GP0_awburst => M_AXI_GP0_awburst,
-    M_AXI_GP0_awcache => M_AXI_GP0_awcache,
-    M_AXI_GP0_awid    => M_AXI_GP0_awid,
-    M_AXI_GP0_awlen   => M_AXI_GP0_awlen,
-    M_AXI_GP0_awlock  => M_AXI_GP0_awlock,
-    M_AXI_GP0_awprot  => M_AXI_GP0_awprot,
-    M_AXI_GP0_awqos   => M_AXI_GP0_awqos,
-    M_AXI_GP0_awready => M_AXI_GP0_awready,
-    M_AXI_GP0_awsize  => M_AXI_GP0_awsize,
-    M_AXI_GP0_awvalid => M_AXI_GP0_awvalid,
-    M_AXI_GP0_bid     => M_AXI_GP0_bid,
-    M_AXI_GP0_bready  => M_AXI_GP0_bready,
-    M_AXI_GP0_bresp   => M_AXI_GP0_bresp,
-    M_AXI_GP0_bvalid  => M_AXI_GP0_bvalid,
-    M_AXI_GP0_rdata   => M_AXI_GP0_rdata,
-    M_AXI_GP0_rid     => M_AXI_GP0_rid,
-    M_AXI_GP0_rlast   => M_AXI_GP0_rlast,
-    M_AXI_GP0_rready  => M_AXI_GP0_rready,
-    M_AXI_GP0_rresp   => M_AXI_GP0_rresp,
-    M_AXI_GP0_rvalid  => M_AXI_GP0_rvalid,
-    M_AXI_GP0_wdata   => M_AXI_GP0_wdata,
-    M_AXI_GP0_wid     => M_AXI_GP0_wid,
-    M_AXI_GP0_wlast   => M_AXI_GP0_wlast,
-    M_AXI_GP0_wready  => M_AXI_GP0_wready,
-    M_AXI_GP0_wstrb   => M_AXI_GP0_wstrb,
-    M_AXI_GP0_wvalid  => M_AXI_GP0_wvalid
+    M_AXI_GP0_araddr  => m_gp0_axi_araddr,
+    M_AXI_GP0_arburst => m_gp0_axi_arburst,
+    M_AXI_GP0_arcache => m_gp0_axi_arcache,
+    M_AXI_GP0_arid    => m_gp0_axi_arid,
+    M_AXI_GP0_arlen   => m_gp0_axi_arlen,
+    M_AXI_GP0_arlock  => m_gp0_axi_arlock,
+    M_AXI_GP0_arprot  => m_gp0_axi_arprot,
+    M_AXI_GP0_arqos   => m_gp0_axi_arqos,
+    M_AXI_GP0_arready => m_gp0_axi_arready,
+    M_AXI_GP0_arsize  => m_gp0_axi_arsize,
+    M_AXI_GP0_arvalid => m_gp0_axi_arvalid,
+    M_AXI_GP0_awaddr  => m_gp0_axi_awaddr,
+    M_AXI_GP0_awburst => m_gp0_axi_awburst,
+    M_AXI_GP0_awcache => m_gp0_axi_awcache,
+    M_AXI_GP0_awid    => m_gp0_axi_awid,
+    M_AXI_GP0_awlen   => m_gp0_axi_awlen,
+    M_AXI_GP0_awlock  => m_gp0_axi_awlock,
+    M_AXI_GP0_awprot  => m_gp0_axi_awprot,
+    M_AXI_GP0_awqos   => m_gp0_axi_awqos,
+    M_AXI_GP0_awready => m_gp0_axi_awready,
+    M_AXI_GP0_awsize  => m_gp0_axi_awsize,
+    M_AXI_GP0_awvalid => m_gp0_axi_awvalid,
+    M_AXI_GP0_bid     => m_gp0_axi_bid,
+    M_AXI_GP0_bready  => m_gp0_axi_bready,
+    M_AXI_GP0_bresp   => m_gp0_axi_bresp,
+    M_AXI_GP0_bvalid  => m_gp0_axi_bvalid,
+    M_AXI_GP0_rdata   => m_gp0_axi_rdata,
+    M_AXI_GP0_rid     => m_gp0_axi_rid,
+    M_AXI_GP0_rlast   => m_gp0_axi_rlast,
+    M_AXI_GP0_rready  => m_gp0_axi_rready,
+    M_AXI_GP0_rresp   => m_gp0_axi_rresp,
+    M_AXI_GP0_rvalid  => m_gp0_axi_rvalid,
+    M_AXI_GP0_wdata   => m_gp0_axi_wdata,
+    M_AXI_GP0_wid     => m_gp0_axi_wid,
+    M_AXI_GP0_wlast   => m_gp0_axi_wlast,
+    M_AXI_GP0_wready  => m_gp0_axi_wready,
+    M_AXI_GP0_wstrb   => m_gp0_axi_wstrb,
+    M_AXI_GP0_wvalid  => m_gp0_axi_wvalid
   );
 
 end architecture;
