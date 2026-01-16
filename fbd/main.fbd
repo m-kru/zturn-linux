@@ -1,4 +1,6 @@
 Main bus
+  align = 1024 # Align address space to page size.
+
   # Config for write-read test.
   Write_Read_Test config
 
