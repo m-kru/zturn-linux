@@ -1,8 +1,12 @@
-Main bus
+main bus
   align = 1024 # Align address space to page size.
 
   # Config for write-read test.
-  Write_Read_Test config
+  write_read_test config
 
-  Led_Red  config; width = 1; init-value = 1
-  Led_Blue config; width = 1; init-value = 1
+  led_red config; width = 1; init-value = 1
+
+  gpio block
+    led_blue config; width = 1; init-value = 1
+    switches status; width = 4
+

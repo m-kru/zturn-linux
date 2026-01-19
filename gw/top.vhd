@@ -14,6 +14,8 @@ entity Top is
     led_green_o : buffer std_logic := '1';
     led_blue_o  : buffer std_logic := '1';
 
+    switches_i : in std_logic_vector(0 to 3);
+
     -- DDR interface
     DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
     DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
@@ -111,9 +113,11 @@ architecture Main of Top is
   signal m_gp0_axil_rready  : std_logic;
 
   -- Master GP0 APB
-  signal m_gp0_apb_addr : std_logic_vector(31 downto 0);
   signal m_gp0_apb_req : apb.requester_out_t;
   signal m_gp0_apb_com : apb.completer_out_t;
+
+  signal gpio_apb_req : apb.requester_out_t;
+  signal gpio_apb_com : apb.completer_out_t;
 
 begin
 
@@ -132,16 +136,31 @@ begin
   end process;
 
 
-  AFBD_Main : entity afbd.Main
+  afbd_main : entity afbd.main
   port map (
     clk_i => fclk0,
     rst_i => '0',
+
     apb_coms_i(0) => m_gp0_apb_req,
     apb_coms_o(0) => m_gp0_apb_com,
+    gpio_apb_reqs_o(0) => gpio_apb_req,
+    gpio_apb_reqs_i(0) => gpio_apb_com,
 
-    Write_Read_Test_o => open,
-    Led_Red_o(0)  => led_red_o,
-    Led_Blue_o(0) => led_blue_o
+    write_read_test_o => open,
+    led_red_o(0)  => led_red_o
+  );
+
+
+  afbd_gpio : entity afbd.gpio
+  port map (
+    clk_i => fclk0,
+    rst_i => '0',
+
+    apb_coms_i(0) => gpio_apb_req,
+    apb_coms_o(0) => gpio_apb_com,
+
+    led_blue_o(0) => led_blue_o,
+    switches_i    => switches_i
   );
 
 
