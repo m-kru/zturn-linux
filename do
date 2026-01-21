@@ -96,13 +96,13 @@ bootbin_cp() {
 }
 
 
-HELP["buildroot-setup"]="Set up buildroot for Linux and rootfs compilation in the build directory.
+HELP["br-setup"]="Set up buildroot for Linux and rootfs compilation in the build directory.
 \nThe command automatically links .config to the valid configuration.
 The command does not start any compilation implicitly.
 You must explicitly cd to the buildroot diretory and call make."
-COMMAND["buildroot-setup"]="buildroot_setup"
+COMMAND["br-setup"]="br_setup"
 
-buildroot_setup() {
+br_setup() {
   local buildroot_tar="buildroot-$BUILDROOT_VERSION.tar.gz"
   local buildroot_dir="buildroot-$BUILDROOT_VERSION"
 
