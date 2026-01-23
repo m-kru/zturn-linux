@@ -187,13 +187,13 @@ begin
     s_axi_rready  => m_gp0_axil_rready,
     -- APB port
     unsigned(m_apb_paddr) => m_gp0_apb_req.addr,
-    m_apb_psel(0)    => m_gp0_apb_req.selx,
-    m_apb_penable    => m_gp0_apb_req.enable,
-    m_apb_pwrite     => m_gp0_apb_req.write,
-    m_apb_pwdata     => m_gp0_apb_req.wdata,
-    m_apb_pready(0)  => m_gp0_apb_com.ready,
-    m_apb_prdata     => m_gp0_apb_com.rdata,
-    m_apb_pslverr(0) => m_gp0_apb_com.slverr
+    m_apb_psel(0)         => m_gp0_apb_req.selx,
+    m_apb_penable         => m_gp0_apb_req.enable,
+    m_apb_pwrite          => m_gp0_apb_req.write,
+    m_apb_pwdata          => m_gp0_apb_req.wdata,
+    m_apb_pready(0)       => m_gp0_apb_com.ready,
+    m_apb_prdata          => m_gp0_apb_com.rdata,
+    m_apb_pslverr(0)      => m_gp0_apb_com.slverr
   );
 
 
