@@ -1,3 +1,20 @@
-fatload mmc 0:1 0x10000000 uImage
-fatload mmc 0:1 0x30000000 system.dtb
-bootm 0x10000000 - 0x30000000
+setenv krnl_addr_r    0x10000000
+setenv fdt_addr_r     0x30000000
+setenv overlay_addr_r 0x35000000
+
+echo "loading kernel image"
+fatload mmc 0:1 ${krnl_addr_r} uImage
+
+echo "loading device tree"
+fatload mmc 0:1 ${fdt_addr_r} system.dtb
+
+echo "loading device tree overlay"
+fatload mmc 0:1 ${overlay_addr_r} system.dtbo
+
+echo "applying device tree overlay"
+fdt addr ${fdt_addr_r}
+fdt resize 16384
+fdt apply ${overlay_addr_r}
+
+echo "booting kernel"
+bootm ${krnl_addr_r} - ${fdt_addr_r}

@@ -54,6 +54,20 @@ help() {
 }
 
 
+HELP["dtso"]="Generate DTS overlay"
+COMMAND["dtso"]="dtso"
+
+dtso() {
+  ./scripts/dts-gen.py build/afbd/reg.json > build/system.dtso
+}
+
+HELP["dtbo"]="Compile DTS overlay"
+COMMAND["dtbo"]="dtbo"
+
+dtbo() {
+  dtc -@ -I dts -O dtb -o build/system.dtbo build/system.dtso
+}
+
 HELP["gw"]="Build gateware."
 COMMAND["gw"]="gw"
 
