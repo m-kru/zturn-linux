@@ -13,7 +13,7 @@ dts = string.Template(
 /dts-v1/;
 /plugin/;
 
-/ {
+&{/} {
 	#address-cells = <1>;
 	#size-cells = <1>;
 
