@@ -92,20 +92,25 @@ bootbin() {
 }
 
 
-HELP["bootbin-cp"]="Copy build/boot.bin to the provided partition.
+HELP["sd-cp"]="Copy provided file to the provided SD card partition.
 \nUsage:
-  ./do bootbin-cp partition\n
-The command automatically mounts and unmounts the partition using the pmount command."
-COMMAND["bootbin-cp"]="bootbin_cp"
+  ./do sd-cp args partition\n
+The command automatically mounts and unmounts the partition using the pmount command.
+The args are passed as is to the cp command.
 
-bootbin_cp() {
+Example:
+  do sd-cp build/boot.bin sda1"
+COMMAND["sd-cp"]="sd_cp"
+
+sd_cp() {
   if [ $# -lt 1 ]; then
     die "missing partition argument"
   fi
 
-  readonly part=$1
+  readonly part=${!#}
   pmount "/dev/$part"
-  cp build/boot.bin "/media/$part"
+  set -- "${@:1:$#-1}"
+  cp "$@" "/media/$part"
   pumount "/dev/$part"
 }
 
