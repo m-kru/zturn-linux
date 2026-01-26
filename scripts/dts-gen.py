@@ -18,7 +18,7 @@ dts = string.Template(
 	#size-cells = <1>;
 
 	gpio: gpio@$gpio_addr {
-		compatible = "gpio";
+		compatible = "zturn-gpio";
 		reg = <0x$gpio_addr $gpio_size>;
 	};
 };"""
