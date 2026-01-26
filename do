@@ -140,6 +140,14 @@ br_setup() {
 
   cd $buildroot_dir
   ln -s -f ../../config/buildroot .config
+
+  cd package
+  ln -s -f ../../../fw/zturn-gpio .
+
+  echo "
+menu \"Z-Turn packages\"
+	source \"package/zturn-gpio/Config.in\"
+endmenu " >> Config.in
 }
 
 HELP["git-rm-ignored"]="Remove only files ignored by git.
