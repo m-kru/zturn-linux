@@ -1,27 +1,27 @@
-config BR2_PACKAGE_ZTURN
-	bool "zturn"
+config BR2_PACKAGE_EXAMPLES
+	bool "examples"
 	default y
 	help
-	  The package contains Z-Turn examples.
+	  The package contains various Linux on Zynq examples.
 
 	  https://github.com/m-kru/zturn-linux
 
-if BR2_PACKAGE_ZTURN
-	config BR2_PACKAGE_ZTURN_GPIO
-		bool "zturn-gpio"
+if BR2_PACKAGE_EXAMPLES
+	config BR2_PACKAGE_EXAMPLES_GPIO
+		bool "gpio"
 		default y
 		help
 		  Custom GPIO example.
 
-	if BR2_PACKAGE_ZTURN_GPIO
-		config BR2_PACKAGE_ZTURN_GPIO_APP
-			bool "gpio app"
+	if BR2_PACKAGE_EXAMPLES_GPIO
+		config BR2_PACKAGE_EXAMPLES_GPIO_APP
+			bool "app"
 			default y
 			help
 			  User space application for controlling custom GPIO module.
 
-		config BR2_PACKAGE_ZTURN_GPIO_DRIVER
-			bool "gpio driver"
+		config BR2_PACKAGE_EXAMPLES_GPIO_DRIVER
+			bool "driver"
 			default y
 			depends on BR2_LINUX_KERNEL
 			help
