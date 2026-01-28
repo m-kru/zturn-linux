@@ -139,14 +139,14 @@ br_setup() {
   fi
 
   cd $buildroot_dir
-  ln -s -f ../../config/buildroot .config
+  BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
 
   cd package
   ln -s -f ../../../fw/zturn-gpio .
 
   echo "
 menu \"Z-Turn packages\"
-	source \"package/zturn-gpio/Config.in\"
+	source \"../../fw/zturn-gpio/Config.in\"
 endmenu " >> Config.in
 }
 
