@@ -1,0 +1,33 @@
+config BR2_PACKAGE_ZTURN
+	bool "zturn"
+	default y
+	help
+	  The package contains Z-Turn examples.
+
+	  https://github.com/m-kru/zturn-linux
+
+if BR2_PACKAGE_ZTURN
+	config BR2_PACKAGE_ZTURN_GPIO
+		bool "zturn-gpio"
+		default y
+		help
+		  Custom GPIO example.
+
+	if BR2_PACKAGE_ZTURN_GPIO
+		config BR2_PACKAGE_ZTURN_GPIO_APP
+			bool "gpio app"
+			default y
+			help
+			  User space application for controlling custom GPIO module.
+
+		config BR2_PACKAGE_ZTURN_GPIO_DRIVER
+			bool "gpio driver"
+			default y
+			depends on BR2_LINUX_KERNEL
+			help
+			  Kernel driver for custom GPIO module.
+
+		comment "kernel driver requires the Linux kernel to be built"
+			depends on !BR2_LINUX_KERNEL
+	endif
+endif

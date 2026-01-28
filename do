@@ -142,11 +142,11 @@ br_setup() {
   BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
 
   cd package
-  ln -s -f ../../../fw/zturn-gpio .
+  ln -s -f ../../../fw/zturn .
 
   echo "
 menu \"Z-Turn packages\"
-	source \"../../fw/zturn-gpio/Config.in\"
+	source \"../../fw/zturn/Config.in\"
 endmenu " >> Config.in
 }
 
