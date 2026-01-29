@@ -10,7 +10,7 @@ define EXAMPLES_BUILD_GPIO
 endef
 
 define EXAMPLES_INSTALL_GPIO
-	$(INSTALL) -D -m 0755 $(@D)/gpio/ex-gpio $(TARGET_DIR)/usr/bin/ex-gpio
+	$(INSTALL) -D -m 0755 $(@D)/gpio/build/ex-gpio $(TARGET_DIR)/usr/bin/ex-gpio
 endef
 endif
 

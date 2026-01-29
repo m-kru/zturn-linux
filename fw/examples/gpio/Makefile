@@ -1,40 +1,35 @@
-TARGET := zturn-gpio
+TARGET := ex-gpio
+BUILD_DIR := build
 
 # Compiler and Flags
 CC ?= gcc
-CFLAGS  += -Wall -Wextra -g
+CFLAGS  += -Wall -Wextra -g -DLOG_COLOR
 LDFLAGS +=
 
-# 2. Directories & Targets
-# Add your source directories here (separated by spaces)
-SRCDIRS := . afbd
-SRCDIRS := $(abspath $(SRCDIRS))
+# 1. Use relative paths for source directories
+SRCDIRS := . afbd common
 
-#INCDIRS := ../autogen
-#INCDIRS := $(abspath $(INCDIRS))
-#INCFLAGS := $(addprefix -I,$(INCDIRS))
-#CFLAGS += $(INCFLAGS)
-
-# File Discovery
-# Find all .c files in the specified directories
+# 2. Find all .c files (relative paths)
 SRCS := $(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.c))
 
-# Create a list of .o files by replacing .c with .o
-OBJS := $(SRCS:.c=.o)
+# 3. Strip the "./" from paths if it exists so build/./main.o becomes build/main.o
+SRCS := $(patsubst ./%,%,$(SRCS))
 
-# Build targets
+# 4. Create the object list inside the build directory
+OBJS := $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))
+
 .PHONY: all
 all: $(TARGET)
 
-# Link the executable
+# Link
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
+	$(CC) $(OBJS) -o $(BUILD_DIR)/$(TARGET) $(LDFLAGS)
 
-# Compile source files into object files
-%.o: %.c
+# Compile
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Cleanup
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(BUILD_DIR)
