@@ -2,10 +2,14 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "common/common.h"
 #include "common/log.h"
 #include "common/panic.h"
+
+static int dev_fd;
 
 typedef enum {
 	ACTION_PROMPT,
@@ -44,7 +48,10 @@ static void switches_read(void) {
 	if (err)
 		panic_errno("can't get start time");
 
-	// TODO: Implement read here.
+	uint32_t switches;
+	const size_t n = read(dev_fd, &switches, 4);
+	if (n != 4)
+		panic("reading switches state failed");
 
 	err = clock_gettime(CLOCK_MONOTONIC, &end);
 	if (err)
@@ -56,7 +63,7 @@ static void switches_read(void) {
 
 	info("read took %ld us", us);
 
-	printf("switches state: \n");
+	printf("switches state: 0x%" PRIx32 "\n", switches);
 
 	state = ACTION_PROMPT;
 }
@@ -93,6 +100,10 @@ quit:
 }
 
 int main(int, char **) {
+	dev_fd = open("/dev/ex-gpio", O_RDWR);
+	if (dev_fd < 0)
+		panic("cannot open device file");
+
 	while (1) {
 		switch (state) {
 		case ACTION_PROMPT:
@@ -110,6 +121,8 @@ int main(int, char **) {
 			panic("invalid state %d", state);
 		}
 	}
+
+	close(dev_fd);
 
 	return 0;
 }

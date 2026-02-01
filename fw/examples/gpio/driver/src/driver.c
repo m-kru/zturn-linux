@@ -9,10 +9,10 @@
 #include <linux/miscdevice.h>
 
 #include "afbd/afbd.h"
+#include "afbd/mmap-iface.h"
 #include "afbd/gpio.h"
 #define AFBD_IFACE &afbd_iface
 
-// TODO: Initialize
 static afbd_iface_t afbd_iface;
 
 #define DEV_NAME "ex-gpio"
@@ -79,7 +79,7 @@ static struct file_operations fops = {
 
 static struct miscdevice misc_device = {
 	.minor = MISC_DYNAMIC_MINOR,
-	.name = "ex-gpio",
+	.name = DEV_NAME,
 	.fops = &fops,
 };
 
@@ -94,6 +94,8 @@ static int driver_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to map IO memory\n");
 		return PTR_ERR(memory);
 	}
+
+	afbd_iface = afbd_mmap_iface(memory);
 
 	const int ret = misc_register(&misc_device);
 	if (ret) {
