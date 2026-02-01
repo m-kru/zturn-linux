@@ -1,4 +1,5 @@
 #ifndef _AFBD_gpio_H_
+#define _AFBD_gpio_H_
 
 #include "afbd.h"
 

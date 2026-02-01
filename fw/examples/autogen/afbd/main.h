@@ -1,4 +1,5 @@
 #ifndef _AFBD_main_H_
+#define _AFBD_main_H_
 
 #include "afbd.h"
 

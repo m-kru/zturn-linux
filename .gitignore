@@ -1,2 +1,12 @@
 build/
 cache/
+
+**/*.o
+
+# Driver generated files
+**/*/.*.cmd
+**/driver/*.ko
+**/driver/*.mod
+**/driver/*.mod.c
+**/driver/modules.order
+**/driver/Module.symvers

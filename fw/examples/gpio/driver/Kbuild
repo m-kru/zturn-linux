@@ -1,0 +1,2 @@
+obj-m := ex-gpio.o
+ex-gpio-objs := src/driver.o src/afbd/gpio.o
