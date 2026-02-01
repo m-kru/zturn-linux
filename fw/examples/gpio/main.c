@@ -83,7 +83,9 @@ static void leds_write(void) {
 	if (err)
 		panic_errno("can't get start time");
 
-	// TODO: Implement write here.
+	const int n = write(dev_fd, &leds, 4);
+	if (n != 4)
+		panic("writing leds failed");
 
 	err = clock_gettime(CLOCK_MONOTONIC, &end);
 	if (err)

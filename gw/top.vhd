@@ -159,8 +159,8 @@ begin
     apb_coms_i(0) => gpio_apb_req,
     apb_coms_o(0) => gpio_apb_com,
 
-    led_blue_o(0) => led_blue_o,
-    switches_i    => switches_i
+    leds_o(0)  => led_blue_o,
+    switches_i => switches_i
   );
 
 

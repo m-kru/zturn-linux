@@ -7,6 +7,6 @@ main bus
   led_red config; width = 1; init-value = 1
 
   gpio block
-    led_blue config; width = 1; init-value = 1
+    leds config; width = 1; init-value = 1
     switches status; width = 4
 

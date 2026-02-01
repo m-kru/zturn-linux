@@ -65,7 +65,7 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 		return -EFAULT;
 	}
 
-	// TODO: afbd write here
+	afbd_write(gpio_leds, leds);
 
 	return 4;
 }

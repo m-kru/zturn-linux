@@ -10,7 +10,7 @@ int afbd_gpio_switches_read(afbd_iface_t * const iface, uint8_t * const data)
 	return 0;
 };
 
-int afbd_gpio_led_blue_read(afbd_iface_t * const iface, uint8_t * const data)
+int afbd_gpio_leds_read(afbd_iface_t * const iface, uint8_t * const data)
 {
 	uint32_t aux;
 	const int err = iface->read(iface, 0, &aux);
@@ -20,7 +20,7 @@ int afbd_gpio_led_blue_read(afbd_iface_t * const iface, uint8_t * const data)
 	return 0;
 };
 
-int afbd_gpio_led_blue_write(afbd_iface_t * const iface, uint8_t const data)
+int afbd_gpio_leds_write(afbd_iface_t * const iface, uint8_t const data)
 {
 	return iface->write(iface, 0, (data << 0));
 };
