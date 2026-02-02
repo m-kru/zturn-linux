@@ -10,3 +10,8 @@ main bus
     leds config; width = 1; init-value = 1
     switches status; width = 4
 
+  timer block
+    counter status
+    start proc
+      period param
+    stop proc
