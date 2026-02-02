@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x1713B87EEB73B7C1",
+      "boundary_crc": "0xAC861DE7173C2059",
       "device": "xc7z020clg400-1",
       "name": "processing_system",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -602,6 +602,20 @@
             "value_src": "default"
           }
         }
+      },
+      "IRQ_F2P": {
+        "type": "intr",
+        "direction": "I",
+        "left": "15",
+        "right": "0",
+        "parameters": {
+          "PortWidth": {
+            "value": "16"
+          },
+          "SENSITIVITY": {
+            "value": "EDGE_RISING"
+          }
+        }
       }
     },
     "components": {
@@ -1062,6 +1076,9 @@
           },
           "PCW_INCLUDE_ACP_TRANS_CHECK": {
             "value": "0"
+          },
+          "PCW_IRQ_F2P_INTR": {
+            "value": "1"
           },
           "PCW_MIO_16_IOTYPE": {
             "value": "LVCMOS 1.8V"
@@ -1827,7 +1844,7 @@
             "value": "0"
           },
           "PCW_USE_FABRIC_INTERRUPT": {
-            "value": "0"
+            "value": "1"
           },
           "PCW_USE_HIGH_OCM": {
             "value": "0"
@@ -2043,6 +2060,12 @@
       }
     },
     "nets": {
+      "IRQ_F2P_0_1": {
+        "ports": [
+          "IRQ_F2P",
+          "processing_system7_0/IRQ_F2P"
+        ]
+      },
       "M_AXI_GP0_ACLK_0_1": {
         "ports": [
           "M_AXI_GP0_ACLK",
@@ -2072,6 +2095,19 @@
                 "range": "64K",
                 "width": "16",
                 "usage": "register"
+              }
+            }
+          }
+        }
+      },
+      "/processing_system7_0": {
+        "address_spaces": {
+          "Data": {
+            "segments": {
+              "SEG_M_AXI_GP0_Reg": {
+                "address_block": "/M_AXI_GP0/Reg",
+                "offset": "0x43C00000",
+                "range": "64K"
               }
             }
           }

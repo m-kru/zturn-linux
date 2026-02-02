@@ -50,6 +50,7 @@ architecture Main of Top is
 
   signal fclk0 : std_logic;
   signal fclk_reset0_n : std_logic;
+  signal irq_f2p : std_logic_vector(15 downto 0);
 
   -- Master GP0 AXI
   signal m_gp0_axi_araddr  : std_logic_vector(31 downto 0);
@@ -112,14 +113,38 @@ architecture Main of Top is
   signal m_gp0_axil_rvalid  : std_logic;
   signal m_gp0_axil_rready  : std_logic;
 
+  --
   -- Master GP0 APB
+  --
+
   signal m_gp0_apb_req : apb.requester_out_t;
   signal m_gp0_apb_com : apb.completer_out_t;
 
   signal gpio_apb_req : apb.requester_out_t;
   signal gpio_apb_com : apb.completer_out_t;
 
+  signal timer_apb_req : apb.requester_out_t;
+  signal timer_apb_com : apb.completer_out_t;
+
+  --
+  -- Timer
+  --
+
+  type timer_state_t is (DISABLED, ENABLED);
+  signal timer_state : timer_state_t := DISABLED;
+
+  signal timer_counter : unsigned(31 downto 0);
+  signal timer_period  : unsigned(31 downto 0);
+  signal timer_irq : std_logic;
+
+  signal afbd_timer_start : afbd.timer_pkg.start_out_t;
+  signal afbd_timer_stop  : afbd.timer_pkg.stop_out_t;
+
+
 begin
+
+  irq_f2p(15) <= timer_irq;
+
 
   Heartbeat_FCLK0 : process (fclk0)
     constant CNT_MAX : natural := FCLK0_FREQ / 2;
@@ -136,6 +161,34 @@ begin
   end process;
 
 
+  timer : process (fclk0)
+  begin
+    if rising_edge(fclk0) then
+      timer_irq <= '0';
+
+      case timer_state is
+      when DISABLED =>
+        if afbd_timer_start.call = '1' then
+          timer_counter <= unsigned(afbd_timer_start.period);
+          timer_period  <= unsigned(afbd_timer_start.period);
+          timer_state   <= ENABLED;
+        end if;
+      when ENABLED =>
+        if timer_counter = 0 then
+          timer_counter <= timer_period;
+          timer_irq <= '1';
+        else
+          timer_counter <= timer_counter - 1;
+        end if;
+
+        if afbd_timer_stop.call = '1' then
+          timer_state <= DISABLED;
+        end if;
+      end case;
+    end if;
+  end process timer;
+
+
   afbd_main : entity afbd.main
   port map (
     clk_i => fclk0,
@@ -145,9 +198,11 @@ begin
     apb_coms_o(0) => m_gp0_apb_com,
     gpio_apb_reqs_o(0) => gpio_apb_req,
     gpio_apb_reqs_i(0) => gpio_apb_com,
+    timer_apb_reqs_o(0) => timer_apb_req,
+    timer_apb_reqs_i(0) => timer_apb_com,
 
     write_read_test_o => open,
-    led_red_o(0)  => led_red_o
+    led_red_o(0)      => led_red_o
   );
 
 
@@ -161,6 +216,20 @@ begin
 
     leds_o(0)  => led_blue_o,
     switches_i => switches_i
+  );
+
+
+  afbd_timer : entity afbd.timer
+  port map (
+    clk_i => fclk0,
+    rst_i => '0',
+
+    apb_coms_i(0) => timer_apb_req,
+    apb_coms_o(0) => timer_apb_com,
+
+    start_o   => afbd_timer_start,
+    stop_o    => afbd_timer_stop,
+    counter_i => std_logic_vector(timer_counter)
   );
 
 
@@ -267,6 +336,7 @@ begin
   port map (
     FCLK_CLK0 => fclk0,
     FCLK_RESET0_N => fclk_reset0_n,
+    IRQ_F2P => irq_f2p,
 
     DDR_addr    => DDR_addr,
     DDR_ba      => DDR_ba,
