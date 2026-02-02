@@ -17,21 +17,34 @@ dts = string.Template(
 	#address-cells = <1>;
 	#size-cells = <1>;
 
-	gpio: gpio@$gpio_addr {
+	ex-gpio@$gpio_addr {
 		compatible = "ex-gpio";
 		reg = <0x$gpio_addr $gpio_size>;
+	};
+
+	ex-timer-irq@$timer_addr {
+		compatible = "ex-timer-irq";
+		reg = <0x$timer_addr $timer_size>;
+		interrupt-parent = <&intc>;
+		interrupts = <91 1>; // 1 - rising edge
 	};
 };"""
 )
 
 
-def get_subblock(block, name):
+def get_block(block, name):
+    if block["Name"] == name:
+        return block
+
+    if block["Subblocks"] is None:
+        return None
+
     for subblock in block["Subblocks"]:
         if subblock["Name"] == name:
             return subblock
 
-        for subblk in subblock["Subblocks"]:
-            sb = get_subblock(subblk, name)
+        for subblk in subblock["Subblocks"] or []:
+            sb = get_block(subblk, name)
             if sb != None:
                 return sb
 
@@ -49,12 +62,15 @@ if len(sys.argv) != 2:
 with open(sys.argv[1], "r", encoding="utf-8") as f:
     main = json.load(f)
 
-gpio = get_subblock(main, "gpio")
+gpio = get_block(main, "gpio")
+timer = get_block(main, "timer")
 
 data = {
     "script_name": os.path.basename(__file__),
     "gpio_addr": format(M_GP0_ADDR + 4 * gpio["AddrSpace"]["Start"], 'x'),
     "gpio_size": hex(4 * get_block_size(gpio)),
+    "timer_addr": format(M_GP0_ADDR + 4 * timer["AddrSpace"]["Start"], 'x'),
+    "timer_size": hex(4 * get_block_size(timer)),
 }
 
 dts = dts.substitute(data)
