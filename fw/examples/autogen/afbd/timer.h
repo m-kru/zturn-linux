@@ -1,0 +1,12 @@
+#ifndef _AFBD_timer_H_
+#define _AFBD_timer_H_
+
+#include "afbd.h"
+
+int afbd_timer_counter_read(afbd_iface_t * const iface, uint32_t * const data);
+
+int afbd_timer_start(afbd_iface_t * const iface, const uint32_t period);
+
+int afbd_timer_stop(afbd_iface_t * const iface);
+
+#endif // _AFBD_timer_H_

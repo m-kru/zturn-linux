@@ -12,7 +12,7 @@ char *get_line(size_t *size);
 // In case of any errors 0 is returned.
 char get_first_char(void);
 
-// Reads uint32_t from stdin line, in case of any error returns 1.
+// Reads uint32_t from stdin line, in case of any error returns non-zero value.
 int get_uint32(uint32_t *u32);
 
 #endif // _COMMON_H_

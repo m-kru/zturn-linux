@@ -6,29 +6,29 @@
 
 static int mmap_iface_read(afbd_iface_t * const iface, const uint16_t addr, uint32_t * const data)
 {
-	const size_t offset = addr << 4;
+	const size_t offset = addr << 2;
 
 #if defined(__KERNEL__) && defined(__linux__)
-	*data = readl(iface->data + offset);
+	*data = readl((u8 __iomem *)iface->data + offset);
 	return 0;
 #else
 	#error "unimplemented"
 #endif
 }
 
-int mmap_iface_write(afbd_iface_t * const iface, const uint16_t addr, const uint32_t data)
+static int mmap_iface_write(afbd_iface_t * const iface, const uint16_t addr, const uint32_t data)
 {
-	const size_t offset = addr << 4;
+	const size_t offset = addr << 2;
 
 #if defined(__KERNEL__) && defined(__linux__)
-	writel(data, iface->data + offset);
+	writel(data, (u8 __iomem *)iface->data + offset);
 	return 0;
 #else
 	#error "unimplemented"
 #endif
 }
 
-int mmap_iface_readb(afbd_iface_t * const iface, const uint16_t addr, uint32_t * buf, size_t count)
+static int mmap_iface_readb(afbd_iface_t * const iface, const uint16_t addr, uint32_t * buf, size_t count)
 {
 	for (size_t i = 0; i < count; i++)
 		iface->read(iface, addr + i, &buf[i]);
@@ -36,7 +36,7 @@ int mmap_iface_readb(afbd_iface_t * const iface, const uint16_t addr, uint32_t *
 	return count;
 }
 
-int mmap_iface_writeb(afbd_iface_t * const iface, const uint16_t addr, const uint32_t * buf, size_t count)
+static int mmap_iface_writeb(afbd_iface_t * const iface, const uint16_t addr, const uint32_t * buf, size_t count)
 {
 	for (size_t i = 0; i < count; i++)
 		iface->write(iface, addr + i, buf[i]);

@@ -11,13 +11,13 @@
 typedef struct afbd_iface afbd_iface_t;
 
 struct afbd_iface {
-	// Single read
+	// Single read, should return negative values in case of errors.
 	int (*read)(afbd_iface_t * const iface, const uint16_t addr, uint32_t * const data);
-	// Single write
+	// Single write, should return negative values in case of errors.
 	int (*write)(afbd_iface_t * const iface, const uint16_t addr, const uint32_t data);
-	// Block read
+	// Block read, returns number of read words, or negative value in case of errors.
 	int (*readb)(afbd_iface_t * const iface, const uint16_t addr, uint32_t * buf, size_t count);
-	// Block write
+	// Block write, returns number of written words, or negative value in case of errors.
 	int (*writeb)(afbd_iface_t * const iface, const uint16_t addr, const uint32_t * buf, size_t count);
 	// Optional custom data used as required to implement the interface.
 	// For example, a memory-mapped interface may store memory pointer here.

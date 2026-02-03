@@ -1,26 +1,53 @@
+#include <linux/eventfd.h>
+#include <linux/err.h>
 #include <linux/fs.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/miscdevice.h>
 #include <linux/module.h>
-#include <linux/platform_device.h>
 #include <linux/mod_devicetable.h>
 #include <linux/of.h>
-#include <linux/io.h>
-#include <linux/err.h>
+#include <linux/platform_device.h>
 #include <linux/uaccess.h>
-#include <linux/miscdevice.h>
 
 #include "afbd/afbd.h"
 #include "afbd/mmap-iface.h"
-#include "afbd/gpio.h"
+#include "afbd/timer.h"
 #define AFBD_IFACE &afbd_iface
 
 static afbd_iface_t afbd_iface;
 
-#define DEV_NAME "ex-gpio"
+#define DEV_NAME "ex-timer-irq"
 
-//static int major;
+#define TIMER_FREQ 50000000
+
+#define SET_EVENTFD _IOW('a', '1', int)
+struct eventfd_ctx *efd_ctx = NULL;
+
 static bool opened = false;
-
 static void __iomem *memory;
+
+static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	int user_fd;
+
+	if (cmd == SET_EVENTFD) {
+		if (copy_from_user(&user_fd, (int __user *)arg, sizeof(int)))
+			return -EFAULT;
+
+		// Release old context if it exists
+		if (efd_ctx)
+			eventfd_ctx_put(efd_ctx);
+
+		// Get the context from the user's FD
+		efd_ctx = eventfd_ctx_fdget(user_fd);
+		if (IS_ERR(efd_ctx))
+			return PTR_ERR(efd_ctx);
+
+		pr_info("%s: eventfd context registered\n", DEV_NAME);
+	}
+	return 0;
+}
 
 static int dev_open(struct inode *inodep, struct file *filep)
 {
@@ -34,25 +61,13 @@ static int dev_open(struct inode *inodep, struct file *filep)
 
 static int dev_release(struct inode *inodep, struct file *filep)
 {
+	if (efd_ctx) {
+		eventfd_ctx_put(efd_ctx);
+		efd_ctx = NULL;
+	}
+
 	pr_info("%s: closing\n", DEV_NAME);
 	return 0;
-}
-
-static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset)
-{
-	if (len != 4)
-		return -EINVAL;
-
-	uint32_t switches = 0;
-	int err = afbd_read(gpio_switches, (uint8_t*)&switches);
-	if (err)
-		return -EFAULT;
-
-	err = copy_to_user(buffer, &switches, 4);
-	if (err)
-		return -EFAULT;
-
-	return 4;
 }
 
 static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset)
@@ -60,19 +75,26 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 	if (len != 4)
 		return -EINVAL;
 
-	uint32_t leds;
-	if (copy_from_user(&leds, buffer, 4)) {
+	uint32_t period_in_ms;
+	if (copy_from_user(&period_in_ms, buffer, 4))
 		return -EFAULT;
-	}
 
-	afbd_write(gpio_leds, leds);
+	const uint32_t period_in_ticks = period_in_ms * (TIMER_FREQ / 1000);
+	if (period_in_ticks > 0) {
+		pr_info("%s: starting timer with period %u ticks\n", DEV_NAME, period_in_ticks);
+		afbd_timer_start(&afbd_iface, period_in_ticks);
+	} else {
+		pr_info("%s: stopping timer\n", DEV_NAME);
+		afbd_timer_stop(&afbd_iface);
+	}
 
 	return 4;
 }
 
 static struct file_operations fops = {
+	.unlocked_ioctl = dev_ioctl,
 	.open = dev_open,
-	.read = dev_read,
+	.read = NULL,
 	.write = dev_write,
 	.release = dev_release,
 };
@@ -82,6 +104,14 @@ static struct miscdevice misc_device = {
 	.name = DEV_NAME,
 	.fops = &fops,
 };
+
+static irqreturn_t irq_handler(int irq, void *dev_id)
+{
+	if (efd_ctx)
+		eventfd_signal(efd_ctx, 1);
+
+	return IRQ_HANDLED;
+}
 
 static int driver_probe(struct platform_device *pdev)
 {
@@ -97,11 +127,22 @@ static int driver_probe(struct platform_device *pdev)
 
 	afbd_iface = afbd_mmap_iface(memory);
 
-	const int ret = misc_register(&misc_device);
+	int ret = misc_register(&misc_device);
 	if (ret) {
 		dev_err(&pdev->dev, "could not register misc device\n");
 		return ret;
 	}
+
+	int irq = platform_get_irq(pdev, 0);
+	if (irq < 0) {
+		dev_err(&pdev->dev, "couldn't get irq");
+		return irq;
+	}
+	dev_info(&pdev->dev, "assigned Linux IRQ number: %d\n", irq);
+
+	ret = devm_request_irq(
+		&pdev->dev, irq, irq_handler, IRQF_TRIGGER_RISING, DEV_NAME, NULL
+	);
 
 	dev_info(dev, "device successfully initialized at 0x%px\n", memory);
 	return 0;
@@ -115,7 +156,7 @@ static int driver_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id dt_ids[] = {
-	{ .compatible = "ex-gpio", },
+	{ .compatible = "ex-timer-irq", },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, dt_ids);

@@ -13,17 +13,30 @@ define EXAMPLES_INSTALL_GPIO_APP
 endef
 endif
 
+ifeq ($(BR2_PACKAGE_EXAMPLES_TIMER_IRQ_APP),y)
+define EXAMPLES_BUILD_TIMER_IRQ_APP
+	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/timer-irq
+endef
+define EXAMPLES_INSTALL_TIMER_IRQ_APP
+	$(INSTALL) -D -m 0755 $(@D)/timer-irq/build/ex-timer-irq $(TARGET_DIR)/usr/bin/ex-timer-irq
+endef
+endif
+
 ifeq ($(BR2_PACKAGE_EXAMPLES_GPIO_DRIVER),y)
 EXAMPLES_MODULE_SUBDIRS += gpio/driver
 endif
-
+ifeq ($(BR2_PACKAGE_EXAMPLES_TIMER_IRQ_DRIVER),y)
+EXAMPLES_MODULE_SUBDIRS += timer-irq/driver
+endif
 
 define EXAMPLES_BUILD_CMDS
 	$(EXAMPLES_BUILD_GPIO_APP)
+	$(EXAMPLES_BUILD_TIMER_IRQ_APP)
 endef
 
 define EXAMPLES_INSTALL_TARGET_CMDS
 	$(EXAMPLES_INSTALL_GPIO_APP)
+	$(EXAMPLES_INSTALL_TIMER_IRQ_APP)
 endef
 
 $(eval $(kernel-module))

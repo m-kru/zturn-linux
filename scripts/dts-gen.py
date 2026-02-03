@@ -26,7 +26,7 @@ dts = string.Template(
 		compatible = "ex-timer-irq";
 		reg = <0x$timer_addr $timer_size>;
 		interrupt-parent = <&intc>;
-		interrupts = <91 1>; // 1 - rising edge
+		interrupts = <0 59 1>; // 0: shared peripheral interrupt, 59: IRQ ID 91, 1: rising edge
 	};
 };"""
 )

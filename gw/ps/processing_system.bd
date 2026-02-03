@@ -2106,8 +2106,8 @@
             "segments": {
               "SEG_M_AXI_GP0_Reg": {
                 "address_block": "/M_AXI_GP0/Reg",
-                "offset": "0x43C00000",
-                "range": "64K"
+                "offset": "0x40000000",
+                "range": "256K"
               }
             }
           }

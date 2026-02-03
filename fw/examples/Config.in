@@ -30,4 +30,28 @@ if BR2_PACKAGE_EXAMPLES
 		comment "kernel driver requires the Linux kernel to be built"
 			depends on !BR2_LINUX_KERNEL
 	endif
+
+	config BR2_PACKAGE_EXAMPLES_TIMER_IRQ
+		bool "timer-irq"
+		default y
+		help
+		  Custom timer with interrupt and user space polling.
+
+	if BR2_PACKAGE_EXAMPLES_TIMER_IRQ
+		config BR2_PACKAGE_EXAMPLES_TIMER_IRQ_APP
+			bool "app"
+			default y
+			help
+			  User space application for presenting polling.
+
+		config BR2_PACKAGE_EXAMPLES_TIMER_IRQ_DRIVER
+			bool "driver"
+			default y
+			depends on BR2_LINUX_KERNEL
+			help
+			  Kernel driver for custom timer with interrupt.
+
+		comment "kernel driver requires the Linux kernel to be built"
+			depends on !BR2_LINUX_KERNEL
+	endif
 endif
