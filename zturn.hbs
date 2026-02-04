@@ -23,7 +23,7 @@ namespace eval zturn {
     hbs::AddDep vhdl::amba5::apb::pkg::src
 
     hbs::AddDep afbd::gen vhdl-apb -path build/afbd \
-      c-sync -mmap-iface -offset-addr -path fw/examples/autogen/afbd \
+      c-sync -linux-mmap-iface -offset-addr -path fw/examples/autogen/afbd \
       json -path build/afbd \
       fbd/main.fbd
 

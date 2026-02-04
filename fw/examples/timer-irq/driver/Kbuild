@@ -1,2 +1,2 @@
 obj-m := ex-timer-irq.o
-ex-timer-irq-objs := src/driver.o src/afbd/mmap-iface.o src/afbd/timer.o
+ex-timer-irq-objs := src/driver.o src/afbd/linux-mmap-iface.o src/afbd/timer.o

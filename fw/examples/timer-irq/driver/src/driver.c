@@ -11,7 +11,7 @@
 #include <linux/uaccess.h>
 
 #include "afbd/afbd.h"
-#include "afbd/mmap-iface.h"
+#include "afbd/linux-mmap-iface.h"
 #include "afbd/timer.h"
 #define AFBD_IFACE &afbd_iface
 
@@ -125,7 +125,7 @@ static int driver_probe(struct platform_device *pdev)
 		return PTR_ERR(memory);
 	}
 
-	afbd_iface = afbd_mmap_iface(memory);
+	afbd_iface = afbd_linux_mmap_iface(memory);
 
 	int ret = misc_register(&misc_device);
 	if (ret) {

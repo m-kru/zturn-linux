@@ -35,7 +35,7 @@ if BR2_PACKAGE_EXAMPLES
 		bool "timer-irq"
 		default y
 		help
-		  Custom timer with interrupt and user space polling.
+		  Custom timer with interrupt and user space polling with event file descriptor.
 
 	if BR2_PACKAGE_EXAMPLES_TIMER_IRQ
 		config BR2_PACKAGE_EXAMPLES_TIMER_IRQ_APP

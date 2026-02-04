@@ -1,7 +1,7 @@
 #ifndef _AFBD_MMAP_IFACE_H_
 #define _AFBD_MMAP_IFACE_H_
 
-#if defined(__KERNEL__) && defined(__linux__)
+#if defined(__KERNEL__)
 	#include <linux/types.h>
 #else
 	#include <stddef.h>
@@ -10,8 +10,8 @@
 
 #include "afbd.h"
 
-// Initializes are return. afbd interface
-// Mem is a pointer to the memory-mapped IO.
-afbd_iface_t afbd_mmap_iface(void *mem);
+// Initializes are returns afbd interface.
+// iomem is a pointer to the memory-mapped IO (registers).
+afbd_iface_t afbd_linux_mmap_iface(void *const iomem);
 
 #endif // _AFBD_MMAP_IFACE_H_
