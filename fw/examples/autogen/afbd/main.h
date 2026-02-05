@@ -4,6 +4,9 @@
 #ifndef _AFBD_main_H_
 #define _AFBD_main_H_
 
+#define AFBD_main_OWN_ALIGNED_SIZE 1024
+#define AFBD_main_ALIGNED_SIZE 3072
+
 #include "afbd.h"
 
 extern const uint32_t afbd_main_ID;

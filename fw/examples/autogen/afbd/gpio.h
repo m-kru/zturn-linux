@@ -4,6 +4,9 @@
 #ifndef _AFBD_gpio_H_
 #define _AFBD_gpio_H_
 
+#define AFBD_gpio_OWN_ALIGNED_SIZE 1024
+#define AFBD_gpio_ALIGNED_SIZE 1024
+
 #include "afbd.h"
 
 int afbd_gpio_switches_read(afbd_iface_t * const iface, uint8_t * const data);

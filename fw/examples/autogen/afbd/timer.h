@@ -4,6 +4,9 @@
 #ifndef _AFBD_timer_H_
 #define _AFBD_timer_H_
 
+#define AFBD_timer_OWN_ALIGNED_SIZE 1024
+#define AFBD_timer_ALIGNED_SIZE 1024
+
 #include "afbd.h"
 
 int afbd_timer_counter_read(afbd_iface_t * const iface, uint32_t * const data);

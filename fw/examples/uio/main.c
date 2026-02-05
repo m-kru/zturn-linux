@@ -18,7 +18,7 @@
 #define AFBD_IFACE &afbd_iface
 afbd_iface_t afbd_iface;
 
-#define MAP_SIZE 4096
+#define MAP_SIZE (4 * AFBD_main_OWN_ALIGNED_SIZE)
 
 int uio_fd;
 
