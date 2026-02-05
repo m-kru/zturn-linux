@@ -7,6 +7,12 @@ config BR2_PACKAGE_EXAMPLES
 	  https://github.com/m-kru/zturn-linux
 
 if BR2_PACKAGE_EXAMPLES
+	config BR2_PACKAGE_EXAMPLES_UIO
+		bool "gpio"
+		default y
+		help
+		  Simple uio (User IO) example with generic kernel driver.
+
 	config BR2_PACKAGE_EXAMPLES_GPIO
 		bool "gpio"
 		default y

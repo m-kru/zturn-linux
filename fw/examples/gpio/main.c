@@ -20,7 +20,8 @@ typedef enum {
 
 static state_t state = ACTION_PROMPT;
 
-static void action_prompt(void) {
+static void action_prompt(void)
+{
 	printf("What would you like to do?\n");
 	printf("  1. Read switches state.\n");
 	printf("  2. Write led state.\n");
@@ -42,7 +43,8 @@ static void action_prompt(void) {
 	}
 }
 
-static void switches_read(void) {
+static void switches_read(void)
+{
 	struct timespec start, end;
 	int err = clock_gettime(CLOCK_MONOTONIC, &start);
 	if (err)
@@ -58,17 +60,17 @@ static void switches_read(void) {
 		panic_errno("can't get end time");
 
 	const long s = end.tv_sec - start.tv_sec;
-	const long ns = end.tv_nsec - start.tv_nsec;
-	const long us = s * 1000000 + ns / 1000;
+	const long ns = s * 1000000000 + (end.tv_nsec - start.tv_nsec);
 
-	info("read took %ld us", us);
+	info("read took %ld ns", ns);
 
 	printf("switches state: 0x%" PRIx32 "\n", switches);
 
 	state = ACTION_PROMPT;
 }
 
-static void leds_write(void) {
+static void leds_write(void)
+{
 	printf("Please provide new leds state (uint32_t) ...\n");
 
 	uint32_t leds;
@@ -92,16 +94,16 @@ static void leds_write(void) {
 		panic_errno("can't get end time");
 
 	const long s = end.tv_sec - start.tv_sec;
-	const long ns = end.tv_nsec - start.tv_nsec;
-	const long us = s * 1000000 + ns / 1000;
+	const long ns = s * 1000000000 + (end.tv_nsec - start.tv_nsec);
 
-	info("write took %ld us", us);
+	info("write took %ld ns", ns);
 
 quit:
 	state = ACTION_PROMPT;
 }
 
-int main(int, char **) {
+int main(int, char **)
+{
 	dev_fd = open("/dev/ex-gpio", O_RDWR);
 	if (dev_fd < 0)
 		panic("cannot open device file");
