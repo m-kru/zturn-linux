@@ -85,6 +85,63 @@ static void id_read(void)
 	state = ACTION_PROMPT;
 }
 
+static void test_write(void)
+{
+	printf("Please provide value to write (uint32_t) ...\n");
+
+	uint32_t val;
+	int err = get_uint32(&val);
+	if (err) {
+		error("provided invalid uint32_t literal");
+		goto quit;
+	}
+
+	struct timespec start, end;
+	err = clock_gettime(CLOCK_MONOTONIC, &start);
+	if (err)
+		panic_errno("can't get start time");
+
+	afbd_write(main_write_read_test, val);
+
+	err = clock_gettime(CLOCK_MONOTONIC, &end);
+	if (err)
+		panic_errno("can't get end time");
+
+	const long s = end.tv_sec - start.tv_sec;
+	const long ns = s * 1000000000 + (end.tv_nsec - start.tv_nsec);
+
+	info("write took %ld ns", ns);
+
+quit:
+	state = ACTION_PROMPT;
+}
+
+static void test_read(void)
+{
+	struct timespec start, end;
+	int err = clock_gettime(CLOCK_MONOTONIC, &start);
+	if (err)
+		panic_errno("can't get start time");
+
+	uint32_t val;
+	err = afbd_read(main_write_read_test, &val);
+	if (err)
+		panic("reading write read test reg failed");
+
+	err = clock_gettime(CLOCK_MONOTONIC, &end);
+	if (err)
+		panic_errno("can't get end time");
+
+	const long s = end.tv_sec - start.tv_sec;
+	const long ns = s * 1000000000 + (end.tv_nsec - start.tv_nsec);
+
+	info("read took %ld ns", ns);
+
+	printf("read: %" PRIu32 "\n", val);
+
+	state = ACTION_PROMPT;
+}
+
 int main(int, char**)
 {
 	uio_fd = open("/dev/uio0", O_RDWR);
@@ -106,10 +163,10 @@ int main(int, char**)
 			id_read();
 			break;
 		case TEST_WRITE:
-			//test_write();
+			test_write();
 			break;
 		case TEST_READ:
-			//test_read();
+			test_read();
 			break;
 		case EXIT:
 			exit(0);
