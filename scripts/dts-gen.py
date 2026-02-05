@@ -13,9 +13,14 @@ dts = string.Template(
 /dts-v1/;
 /plugin/;
 
-&{/} {
+&amba {
 	#address-cells = <1>;
 	#size-cells = <1>;
+
+	ex-uio@$main_addr {
+		compatible = "generic-uio";
+		reg = <0x$main_addr $main_size>;
+	};
 
 	ex-gpio@$gpio_addr {
 		compatible = "ex-gpio";
@@ -51,8 +56,8 @@ def get_block(block, name):
     return None
 
 
-def get_block_size(blk):
-    return blk["Sizes"]["Aligned"]
+def get_block_own_size(blk):
+    return blk["Sizes"]["OwnAligned"]
 
 
 if len(sys.argv) != 2:
@@ -67,10 +72,12 @@ timer = get_block(main, "timer")
 
 data = {
     "script_name": os.path.basename(__file__),
+    "main_addr": format(M_GP0_ADDR + 4 * main["AddrSpace"]["Start"], 'x'),
+    "main_size": hex(4 * get_block_own_size(main)),
     "gpio_addr": format(M_GP0_ADDR + 4 * gpio["AddrSpace"]["Start"], 'x'),
-    "gpio_size": hex(4 * get_block_size(gpio)),
+    "gpio_size": hex(4 * get_block_own_size(gpio)),
     "timer_addr": format(M_GP0_ADDR + 4 * timer["AddrSpace"]["Start"], 'x'),
-    "timer_size": hex(4 * get_block_size(timer)),
+    "timer_size": hex(4 * get_block_own_size(timer)),
 }
 
 dts = dts.substitute(data)
