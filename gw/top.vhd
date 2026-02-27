@@ -2,14 +2,23 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+library afbd;
+
 library lapb;
   use lapb.apb;
+  use lapb.serial_bridge.all;
 
-library afbd;
+library ltinyuart;
+    use ltinyuart.tinyuart;
 
 
 entity Top is
   port (
+    ext_clk_10_i : in std_logic; -- External 10 MHz asynchronous clock
+
+    uart_tx_o : out std_logic;
+    uart_rx_i : in  std_logic;
+
     led_red_o   : buffer std_logic := '1';
     led_green_o : buffer std_logic := '1';
     led_blue_o  : buffer std_logic := '1';
@@ -47,6 +56,7 @@ end entity;
 architecture Main of Top is
 
   constant FCLK0_FREQ : natural := 50_000_000;
+  constant EXT_CLK_10_FREQ : natural := 10_000_000;
 
   signal fclk0 : std_logic;
   signal fclk_reset0_n : std_logic;
@@ -126,6 +136,9 @@ architecture Main of Top is
   signal timer_apb_req : apb.requester_out_t;
   signal timer_apb_com : apb.completer_out_t;
 
+  signal apb_test_apb_req : apb.requester_out_t;
+  signal apb_test_apb_com : apb.completer_out_t;
+
   --
   -- Timer
   --
@@ -140,13 +153,32 @@ architecture Main of Top is
   signal afbd_timer_start : afbd.timer_pkg.start_out_t;
   signal afbd_timer_stop  : afbd.timer_pkg.stop_out_t;
 
+  --
+  -- UART
+  --
+
+  constant UART_BAUDRATE : positive := 115_200;
+  constant UART_CYCLES_PER_BAUD : positive := EXT_CLK_10_FREQ / UART_BAUDRATE;
+
+  signal uart_tx : tinyuart.transmitter_t := tinyuart.init(UART_CYCLES_PER_BAUD);
+  signal uart_rx : tinyuart.receiver_t    := tinyuart.init(UART_CYCLES_PER_BAUD);
+
+
+  -- APB Serial Bridge
+  signal serial_bridge : serial_bridge_t := init(ADDR_BYTE_COUNT => 1);
+  signal serial_bridge_apb_com : apb.completer_out_t;
+
+  -- APB CDC Bridge
+  signal apb_cdc_bridge_apb_req : apb.requester_out_t;
+  signal apb_cdc_bridge_apb_com : apb.completer_out_t;
 
 begin
 
+  -- Interrupts mapping
   irq_f2p(15) <= timer_irq;
 
 
-  Heartbeat_FCLK0 : process (fclk0)
+  heartbeat_fclk0 : process (fclk0)
     constant CNT_MAX : natural := FCLK0_FREQ / 2;
     variable cnt : natural range 0 to CNT_MAX;
   begin
@@ -189,6 +221,43 @@ begin
   end process timer;
 
 
+  uart : process (ext_clk_10_i) is
+  begin
+    if rising_edge(ext_clk_10_i) then
+      uart_tx <= tinyuart.clock(uart_tx, serial_bridge.obyte, serial_bridge.obyte_valid);
+      uart_rx <= tinyuart.clock(uart_rx, uart_rx_i, serial_bridge.ibyte_ready);
+    end if;
+  end process;
+  uart_tx_o <= uart_tx.tx;
+
+
+  apb_serial_bridge : process (ext_clk_10_i) is
+  begin
+    if rising_edge(ext_clk_10_i) then
+      serial_bridge <= clock(
+        serial_bridge,
+        uart_rx.obyte, uart_rx.obyte_valid,
+        uart_tx.ibyte_ready,
+        serial_bridge_apb_com
+      );
+    end if;
+  end process;
+
+
+  apb_cdc_bridge : entity lapb.APB_CDC_Bridge
+  port map (
+    com_arstn_i => '1',
+    com_clk_i   => ext_clk_10_i,
+    com_i       => serial_bridge.apb_req,
+    com_o       => serial_bridge_apb_com,
+
+    req_arstn_i => '1',
+    req_clk_i   => fclk0,
+    req_i       => apb_cdc_bridge_apb_com,
+    req_o       => apb_cdc_bridge_apb_req
+  );
+
+
   afbd_main : entity afbd.main
   port map (
     clk_i => fclk0,
@@ -200,6 +269,8 @@ begin
     gpio_apb_reqs_i(0) => gpio_apb_com,
     timer_apb_reqs_o(0) => timer_apb_req,
     timer_apb_reqs_i(0) => timer_apb_com,
+    apb_test_apb_reqs_o(0) => apb_test_apb_req,
+    apb_test_apb_reqs_i(0) => apb_test_apb_com,
 
     write_read_test_o => open,
     led_red_o(0)      => led_red_o
@@ -230,6 +301,19 @@ begin
     start_o   => afbd_timer_start,
     stop_o    => afbd_timer_stop,
     counter_i => std_logic_vector(timer_counter)
+  );
+
+
+  afbd_test : entity afbd.apb_test
+  port map (
+    clk_i => fclk0,
+    rst_i => '0',
+
+    apb_coms_i(0) => apb_test_apb_req,
+    apb_coms_i(1) => apb_cdc_bridge_apb_req,
+
+    apb_coms_o(0) => apb_test_apb_com,
+    apb_coms_o(1) => apb_cdc_bridge_apb_com
   );
 
 

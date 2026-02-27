@@ -5,7 +5,7 @@
 #define _AFBD_main_H_
 
 #define AFBD_main_OWN_ALIGNED_SIZE 1024
-#define AFBD_main_ALIGNED_SIZE 3072
+#define AFBD_main_ALIGNED_SIZE 4096
 
 #include "afbd.h"
 

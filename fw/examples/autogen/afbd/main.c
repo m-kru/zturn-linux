@@ -3,7 +3,7 @@
 
 #include "afbd.h"
 
-const uint32_t afbd_main_ID = 0xa3820726;
+const uint32_t afbd_main_ID = 0xdb160981;
 int afbd_main_ID_read(afbd_iface_t * const iface, uint32_t * const data)
 {
 	return iface->read(iface, 0, data);

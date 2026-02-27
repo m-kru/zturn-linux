@@ -21,6 +21,10 @@ namespace eval zturn {
     hbs::Eval {set_property target_constrs_file [get_files target.xdc] [current_fileset -constrset]}
 
     hbs::AddDep vhdl::amba5::apb::pkg::src
+    hbs::AddDep vhdl::amba5::apb::serial-bridge::src
+    hbs::AddDep vhdl::amba5::apb::cdc-bridge::src
+
+    hbs::AddDep vhdl::tinyuart::src
 
     hbs::AddDep afbd::gen vhdl-apb -path build/afbd \
       c-sync -linux-mmap-iface -offset-addr -path fw/examples/autogen/afbd \
