@@ -221,7 +221,7 @@ begin
   end process timer;
 
 
-  uart : process (ext_clk_10_i) is
+  uart : process (ext_clk_10_i)
   begin
     if rising_edge(ext_clk_10_i) then
       uart_tx <= tinyuart.clock(uart_tx, serial_bridge.obyte, serial_bridge.obyte_valid);
@@ -231,7 +231,7 @@ begin
   uart_tx_o <= uart_tx.tx;
 
 
-  apb_serial_bridge : process (ext_clk_10_i) is
+  apb_serial_bridge : process (ext_clk_10_i)
   begin
     if rising_edge(ext_clk_10_i) then
       serial_bridge <= clock(
