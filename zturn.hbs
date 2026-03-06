@@ -6,6 +6,7 @@ namespace eval zturn {
     hbs::SetTool "vivado-prj"
     hbs::SetDevice "xc7z020clg400-1"
     hbs::Eval {set_property target_language VHDL [current_project]}
+    hbs::Eval {set_msg_config -suppress -id "Synth 8-6014" -string {{REPORT_PREFIX}}}
 
     hbs::AddFile gw/ps/processing_system.bd
     hbs::Eval {make_wrapper -files [get_files processing_system.bd] -top}
