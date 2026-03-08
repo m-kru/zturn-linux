@@ -4,3 +4,6 @@
 [submodule "gw/vhdl-types"]
 	path = gw/vhdl-types
 	url = git@github.com:m-kru/vhdl-types.git
+[submodule "gw/vhdl-tinyuart"]
+	path = gw/vhdl-tinyuart
+	url = git@github.com:m-kru/vhdl-tinyuart.git
