@@ -6,7 +6,7 @@ set -eu
 # Configuration variables
 #
 
-BUILDROOT_VERSION=2025.02.9
+BUILDROOT_VERSION=2026.02.1
 
 # The value of the LINUX_DIR must match the name of the directory downloaded from the LINUX_URL.
 LINUX_DIR="linux-xlnx"
@@ -108,10 +108,31 @@ sd_cp() {
 }
 
 
-HELP["br-setup"]="Set up buildroot for Linux and rootfs compilation in the build directory.
+HELP["br"]="Cd to Buildroot directory and execute args.
+\nUsage:
+  ./do br args
+
+If the Buildroot directory does not exist, it first calls the 'br-setup' command."
+br() {
+  if [ $# -lt 1 ]; then
+    die "missing args, check './do help br'"
+  fi
+
+  if [ ! -d "./build/buildroot-$BUILDROOT_VERSION" ]; then
+    br_setup
+  fi
+
+  cd build/buildroot-$BUILDROOT_VERSION
+  "$@"
+
+  cd ../..
+}
+
+
+HELP["br-setup"]="Set up Buildroot for rootfs compilation in the build directory.
 \nThe command automatically links .config to the valid configuration.
 The command does not start any compilation implicitly.
-You must explicitly cd to the buildroot diretory and call make."
+You must explicitly cd to the Buildroot diretory and call make."
 br_setup() {
   local buildroot_tar="buildroot-$BUILDROOT_VERSION.tar.gz"
   local buildroot_dir="buildroot-$BUILDROOT_VERSION"
@@ -140,7 +161,7 @@ menu \"Exmaples\"
 	source \"../../fw/examples/Config.in\"
 endmenu " >> Config.in
 
-  cd ../..
+  cd ../../..
 }
 
 
@@ -175,7 +196,7 @@ linux() {
     linux_setup
   fi
 
-  cd build/linux*
+  cd build/$LINUX_DIR
   # shellcheck source=/dev/null
   source ../../scripts/linux-setup-env.sh
   "$@"
