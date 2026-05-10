@@ -8,6 +8,8 @@ set -eu
 
 BUILDROOT_VERSION=2025.02.9
 
+# The value of the LINUX_DIR must match the name of the directory downloaded from the LINUX_URL.
+LINUX_DIR="linux-xlnx"
 LINUX_URL="org-3189299@github.com:Xilinx/linux-xlnx.git"
 # Linux branch or tag name to be downloaded.
 LINUX_BRANCH=xlnx_rebase_v6.6_LTS
@@ -158,6 +160,30 @@ bootscr() {
 }
 
 
+HELP["linux"]="Cd to Linux directory and execute args.
+\nUsage:
+  ./do linux args
+
+The command sets up the Linux environment before executing args.
+If the linux directory does not exist, it first calls the 'linux-setup' command."
+linux() {
+  if [ $# -lt 1 ]; then
+    die "missing args, check './do help linux'"
+  fi
+
+  if [ ! -d "./build/$LINUX_DIR" ]; then
+    linux_setup
+  fi
+
+  cd build/linux*
+  # shellcheck source=/dev/null
+  source ../../scripts/linux-setup-env.sh
+  "$@"
+
+  cd ../..
+}
+
+
 HELP["linux-setup"]="Set up Linux for compilation in the build directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
@@ -165,6 +191,14 @@ linux_setup() {
   mkdir -p build
   cd build
   git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
+
+  cd $LINUX_DIR
+  # shellcheck source=/dev/null
+  source ../../scripts/linux-setup-env.sh
+  make xilinx_zynq_defconfig
+  ./scripts/kconfig/merge_config.sh .config ../../config/kernel.conf
+
+  cd ../..
 }
 
 
@@ -190,7 +224,7 @@ cmd=$1
 shift
 
 if [[ ! -v HELP["$cmd"] ]]; then
-  help "$@"
+  help
   exit 1
 fi
 
