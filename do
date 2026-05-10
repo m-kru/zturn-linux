@@ -10,7 +10,7 @@ BUILDROOT_VERSION=2025.02.9
 
 LINUX_URL="org-3189299@github.com:Xilinx/linux-xlnx.git"
 # Linux branch or tag name to be downloaded.
-LINUX_BRANCH=xilinx-v2025.2
+LINUX_BRANCH=xlnx_rebase_v6.6_LTS
 
 #
 # Utility functions
@@ -162,8 +162,19 @@ HELP["linux-setup"]="Set up Linux for compilation in the build directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
 linux_setup() {
+  mkdir -p build
   cd build
   git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
+}
+
+
+HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/kernel.conf).
+The command runs 'make savedefconfig' in the Linux directory, and copies the defconfig file to the ./config directory."
+linux_update_defconfig() {
+  cd build/linux*
+  make savedefconfig
+  cp defconfig ../../config/kernel.conf
+  cd ../..
 }
 
 #
