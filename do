@@ -217,18 +217,18 @@ linux_setup() {
   # shellcheck source=/dev/null
   source ../../scripts/linux-setup-env.sh
   make xilinx_zynq_defconfig
-  ./scripts/kconfig/merge_config.sh .config ../../config/kernel.conf
+  ./scripts/kconfig/merge_config.sh .config ../../config/linux.conf
 
   cd ../..
 }
 
 
-HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/kernel.conf).
+HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/linux.conf).
 The command runs 'make savedefconfig' in the Linux directory, and copies the defconfig file to the ./config directory."
 linux_update_defconfig() {
   cd build/linux*
   make savedefconfig
-  cp defconfig ../../config/kernel.conf
+  cp defconfig ../../config/linux.conf
   cd ../..
 }
 
