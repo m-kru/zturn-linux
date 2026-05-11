@@ -146,22 +146,22 @@ br_setup() {
 
   mkdir -p build
   cd build
+
   if [ ! -d $buildroot_dir ]; then
     tar -xvf ../cache/$buildroot_tar
   fi
 
-  cd $buildroot_dir
-  BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
-
-  cd package
+  cd $buildroot_dir/package
   ln -s -f ../../../fw/examples .
-
   echo "
 menu \"Exmaples\"
 	source \"../../fw/examples/Config.in\"
 endmenu " >> Config.in
 
-  cd ../../..
+  cd ..
+  BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
+
+  cd ../..
 }
 
 
