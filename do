@@ -151,15 +151,8 @@ br_setup() {
     tar -xvf ../cache/$buildroot_tar
   fi
 
-  cd $buildroot_dir/package
-  ln -s -f ../../../fw/examples .
-  echo "
-menu \"Exmaples\"
-	source \"../../fw/examples/Config.in\"
-endmenu " >> Config.in
-
-  cd ..
-  BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
+  cd $buildroot_dir
+  BR2_EXTERNAL=../../br BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
 
   cd ../..
 }

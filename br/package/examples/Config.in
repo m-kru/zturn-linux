@@ -1,0 +1,27 @@
+config BR2_PACKAGE_EXAMPLES
+	bool "examples"
+	default y
+	help
+	  The package contains various Linux on Zynq examples.
+
+	  https://github.com/m-kru/zturn-linux
+
+if BR2_PACKAGE_EXAMPLES
+	config BR2_PACKAGE_EXAMPLES_UIO
+		bool "uio"
+		default y
+		help
+		  Simple uio (User IO) example with generic kernel driver.
+
+	config BR2_PACKAGE_EXAMPLES_GPIO
+		bool "gpio app"
+		default y
+		help
+		  User space application for controlling custom GPIO module.
+
+	config BR2_PACKAGE_EXAMPLES_TIMER_IRQ
+		bool "timer-irq app"
+		default y
+		help
+		  User space application for presenting polling.
+endif
