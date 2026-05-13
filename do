@@ -2,17 +2,8 @@
 
 set -eu
 
-#
-# Configuration variables
-#
-
-BUILDROOT_VERSION=2026.02.1
-
-# The value of the LINUX_DIR must match the name of the directory downloaded from the LINUX_URL.
-LINUX_DIR="linux-xlnx"
-LINUX_URL="org-3189299@github.com:Xilinx/linux-xlnx.git"
-# Linux branch or tag name to be downloaded.
-LINUX_BRANCH=xlnx_rebase_v6.6_LTS
+# shellcheck source=/dev/null
+source ./config/config.sh
 
 #
 # Utility functions
@@ -59,13 +50,13 @@ help() {
 
 HELP["dtso"]="Generate DTS overlay."
 dtso() {
-  ./scripts/dts-gen.py build/afbd/reg.json > build/system.dtso
+  ./scripts/dts-gen.py "$BUILD_DIR/afbd/reg.json" > "$BUILD_DIR/system.dtso"
 }
 
 
 HELP["dtbo"]="Compile DTS overlay."
 dtbo() {
-  dtc -@ -I dts -O dtb -o build/system.dtbo build/system.dtso
+  dtc -@ -I dts -O dtb -o "$BUILD_DIR/system.dtbo" "$BUILD_DIR/system.dtso"
 }
 
 
@@ -75,15 +66,15 @@ gw() {
 }
 
 
-HELP["gw-rm"]="Remove build/gw directory."
+HELP["gw-rm"]="Remove $BUILD_DIR/gw directory."
 gw_rm() {
-  rm -rf build/gw
+  rm -rf "$BUILD_DIR/gw"
 }
 
 
-HELP["bootbin"]="Generate boot.bin file to the build directory."
+HELP["bootbin"]="Generate boot.bin file to the $BUILD_DIR directory."
 bootbin() {
-  bootgen -arch zynq -image config/zturn.bif -w on -o build/boot.bin
+  bootgen -arch zynq -image config/zturn.bif -w on -o "$BUILD_DIR/boot.bin"
 }
 
 
@@ -94,7 +85,7 @@ The command automatically mounts and unmounts the partition using the pmount com
 The args are passed as is to the cp command.
 
 Example:
-  do sd-cp build/boot.bin sda1"
+  do sd-cp $BUILD_DIR/boot.bin sda1"
 sd_cp() {
   if [ $# -lt 1 ]; then
     die "missing partition argument"
@@ -118,18 +109,18 @@ br() {
     die "missing args, check './do help br'"
   fi
 
-  if [ ! -d "./build/buildroot-$BUILDROOT_VERSION" ]; then
+  if [ ! -d "./$BUILD_DIR/buildroot-$BUILDROOT_VERSION" ]; then
     br_setup
   fi
 
-  cd build/buildroot-$BUILDROOT_VERSION
+  cd "$BUILD_DIR/buildroot-$BUILDROOT_VERSION"
   "$@"
 
   cd ../..
 }
 
 
-HELP["br-setup"]="Set up Buildroot for rootfs compilation in the build directory.
+HELP["br-setup"]="Set up Buildroot for rootfs compilation in the $BUILD_DIR directory.
 \nThe command automatically links .config to the valid configuration.
 The command does not start any compilation implicitly.
 You must explicitly cd to the Buildroot diretory and call make."
@@ -139,19 +130,19 @@ br_setup() {
 
   mkdir -p cache
   cd cache
-  if [ ! -e $buildroot_tar ]; then
+  if [ ! -e "$buildroot_tar" ]; then
     wget "https://buildroot.org/downloads/$buildroot_tar"
   fi
   cd ..
 
-  mkdir -p build
-  cd build
+  mkdir -p "$BUILD_DIR"
+  cd "$BUILD_DIR"
 
-  if [ ! -d $buildroot_dir ]; then
-    tar -xvf ../cache/$buildroot_tar
+  if [ ! -d "$buildroot_dir" ]; then
+    tar -xvf "../cache/$buildroot_tar"
   fi
 
-  cd $buildroot_dir
+  cd "$buildroot_dir"
   BR2_EXTERNAL=../../br BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
 
   cd ../..
@@ -169,8 +160,8 @@ git_rm_ignored() {
 
 HELP["bootscr"]="Compile boot script for U-Boot."
 bootscr() {
-  mkdir -p build
-  mkimage -A arm -T script -C none -n 'Start script' -d fw/boot/boot.txt build/boot.scr
+  mkdir -p "$BUILD_DIR"
+  mkimage -A arm -T script -C none -n 'Start script' -d fw/boot/boot.txt "$BUILD_DIR/boot.scr"
 }
 
 
@@ -185,11 +176,11 @@ linux() {
     die "missing args, check './do help linux'"
   fi
 
-  if [ ! -d "./build/$LINUX_DIR" ]; then
+  if [ ! -d "./$BUILD_DIR/$LINUX_DIR" ]; then
     linux_setup
   fi
 
-  cd build/$LINUX_DIR
+  cd "$BUILD_DIR/$LINUX_DIR"
   # shellcheck source=/dev/null
   source ../../scripts/linux-setup-env.sh
   "$@"
@@ -198,15 +189,15 @@ linux() {
 }
 
 
-HELP["linux-setup"]="Set up Linux for compilation in the build directory.
+HELP["linux-setup"]="Set up Linux for compilation in the $BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
 linux_setup() {
-  mkdir -p build
-  cd build
+  mkdir -p "$BUILD_DIR"
+  cd "$BUILD_DIR"
   git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
 
-  cd $LINUX_DIR
+  cd "$LINUX_DIR"
   # shellcheck source=/dev/null
   source ../../scripts/linux-setup-env.sh
   make xilinx_zynq_defconfig
@@ -219,7 +210,7 @@ linux_setup() {
 HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/linux.conf).
 The command runs 'make savedefconfig' in the Linux directory, and copies the defconfig file to the ./config directory."
 linux_update_defconfig() {
-  cd build/linux*
+  cd "$BUILD_DIR/$LINUX_DIR"
   make savedefconfig
   cp defconfig ../../config/linux.conf
   cd ../..
