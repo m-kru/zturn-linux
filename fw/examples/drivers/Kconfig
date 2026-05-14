@@ -1,0 +1,11 @@
+menu "Zturn"
+
+config ZTURN_EXAMPLES_GPIO
+	bool "Example GPIO"
+	default y
+
+config ZTURN_EXAMPLES_TIMER_IRQ
+	bool "Example timer irq"
+	default y
+
+endmenu

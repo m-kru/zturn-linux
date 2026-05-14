@@ -19,6 +19,7 @@ LINUX_DIR=linux-xlnx
 #
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+PROJECT_DIR=$(dirname "$SCRIPT_DIR")
 
 # The variable name is KERNELDIR, not KDIR or KERNEL_DIR, to keep compatibility with Buildroot.
-KERNELDIR=$(dirname "$SCRIPT_DIR")/$BUILD_DIR/$LINUX_DIR
+KERNELDIR="$PROJECT_DIR/$BUILD_DIR/$LINUX_DIR"

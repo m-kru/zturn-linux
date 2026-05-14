@@ -5,28 +5,28 @@ EXAMPLES_LICENSE = BSD-3-Clause
 
 ifeq ($(BR2_PACKAGE_EXAMPLES_UIO),y)
 define EXAMPLES_BUILD_UIO
-	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/uio
+	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/apps/uio
 endef
 define EXAMPLES_INSTALL_UIO
-	$(INSTALL) -D -m 0755 $(@D)/uio/build/ex-uio $(TARGET_DIR)/usr/bin/ex-uio
+	$(INSTALL) -D -m 0755 $(@D)/apps/uio/build/ex-uio $(TARGET_DIR)/usr/bin/ex-uio
 endef
 endif
 
 ifeq ($(BR2_PACKAGE_EXAMPLES_GPIO),y)
 define EXAMPLES_BUILD_GPIO
-	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/gpio
+	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/apps/gpio
 endef
 define EXAMPLES_INSTALL_GPIO
-	$(INSTALL) -D -m 0755 $(@D)/gpio/build/ex-gpio $(TARGET_DIR)/usr/bin/ex-gpio
+	$(INSTALL) -D -m 0755 $(@D)/apps/gpio/build/ex-gpio $(TARGET_DIR)/usr/bin/ex-gpio
 endef
 endif
 
 ifeq ($(BR2_PACKAGE_EXAMPLES_TIMER_IRQ),y)
 define EXAMPLES_BUILD_TIMER_IRQ
-	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/timer-irq
+	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/apps/timer-irq
 endef
 define EXAMPLES_INSTALL_TIMER_IRQ
-	$(INSTALL) -D -m 0755 $(@D)/timer-irq/build/ex-timer-irq $(TARGET_DIR)/usr/bin/ex-timer-irq
+	$(INSTALL) -D -m 0755 $(@D)/apps/timer-irq/build/ex-timer-irq $(TARGET_DIR)/usr/bin/ex-timer-irq
 endef
 endif
 

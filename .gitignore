@@ -5,8 +5,14 @@ cache/
 
 # Driver generated files
 **/*/.*.cmd
-**/driver/*.ko
-**/driver/*.mod
-**/driver/*.mod.c
-**/driver/modules.order
-**/driver/Module.symvers
+**/drivers/*/*.ko
+**/drivers/*/*.mod
+**/drivers/*/*.mod.c
+**/drivers/*/modules.order
+**/drivers/*/built-in.a
+**/drivers/modules.order
+**/drivers/built-in.a
+**/drivers/Module.symvers
+
+# Buildroot
+br/overlay/lib/modules/

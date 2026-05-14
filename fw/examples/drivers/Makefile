@@ -1,0 +1,2 @@
+obj-$(CONFIG_ZTURN_EXAMPLES_GPIO)	+= gpio/
+obj-$(CONFIG_ZTURN_EXAMPLES_TIMER_IRQ)	+= timer-irq/

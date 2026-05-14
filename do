@@ -116,7 +116,7 @@ br() {
   cd "$BUILD_DIR/buildroot-$BUILDROOT_VERSION"
   "$@"
 
-  cd ../..
+  cd "$PROJECT_DIR"
 }
 
 
@@ -145,7 +145,7 @@ br_setup() {
   cd "$buildroot_dir"
   BR2_EXTERNAL=../../br BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
 
-  cd ../..
+  cd "$PROJECT_DIR"
 }
 
 
@@ -176,7 +176,7 @@ linux() {
     die "missing args, check './do help linux'"
   fi
 
-  if [ ! -d "./$BUILD_DIR/$LINUX_DIR" ]; then
+  if [ ! -d "$BUILD_DIR/$LINUX_DIR" ]; then
     linux_setup
   fi
 
@@ -185,25 +185,7 @@ linux() {
   source ../../scripts/linux-setup-env.sh
   "$@"
 
-  cd ../..
-}
-
-
-HELP["linux-setup"]="Set up Linux for compilation in the $BUILD_DIR directory.
-The command does not start any compilation implicitly.
-You must explicitly cd to the linux diretory and call make."
-linux_setup() {
-  mkdir -p "$BUILD_DIR"
-  cd "$BUILD_DIR"
-  git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
-
-  cd "$LINUX_DIR"
-  # shellcheck source=/dev/null
-  source ../../scripts/linux-setup-env.sh
-  make xilinx_zynq_defconfig
-  ./scripts/kconfig/merge_config.sh .config ../../config/linux.conf
-
-  cd ../..
+  cd "$PROJECT_DIR"
 }
 
 
@@ -213,7 +195,40 @@ linux_update_defconfig() {
   cd "$BUILD_DIR/$LINUX_DIR"
   make savedefconfig
   cp defconfig ../../config/linux.conf
-  cd ../..
+  cd "$PROJECT_DIR"
+}
+
+HELP["linux-setup"]="Set up Linux for compilation in the $BUILD_DIR directory.
+The command does not start any compilation implicitly.
+You must explicitly cd to the linux diretory and call make."
+linux_setup() {
+  mkdir -p "$BUILD_DIR"
+  cd "$BUILD_DIR"
+  git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
+
+  # Attach project related drivers
+  cd "$LINUX_DIR/drivers"
+  ln -s ../../../fw/examples/drivers/ zturn
+  sed -i '2a source "drivers/zturn/Kconfig"' Kconfig
+  echo "obj-y += zturn/" >> Makefile
+
+  cd ..
+  # shellcheck source=/dev/null
+  source ../../scripts/linux-setup-env.sh
+  make xilinx_zynq_defconfig
+  ./scripts/kconfig/merge_config.sh .config ../../config/linux.conf
+
+  cd "$PROJECT_DIR"
+}
+
+HELP["linux-mods-install"]="Install Linux modules to the Buildroot overlay directory.
+The command does not trigger modules (re)compilation process."
+linux_mods_install() {
+  cd "$BUILD_DIR/$LINUX_DIR"
+
+  INSTALL_MOD_PATH="$PROJECT_DIR/br/overlay" make modules_install
+
+  cd "$PROJECT_DIR"
 }
 
 #
