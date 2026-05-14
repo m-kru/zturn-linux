@@ -23,6 +23,11 @@ LINUX_BRANCH=xlnx_rebase_v6.6_LTS
 # The value of the LINUX_DIR_NAME must match the name of the directory downloaded from the LINUX_URL.
 LINUX_DIR_NAME=linux-xlnx
 
+UBOOT_URL="https://github.com/u-boot/u-boot"
+# U-boot branch or tag name to be downloaded.
+UBOOT_BRANCH=v2026.04
+UBOOT_DIR_NAME=u-boot
+
 #
 # Derived variables
 #

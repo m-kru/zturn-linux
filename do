@@ -66,13 +66,13 @@ gw() {
 }
 
 
-HELP["gw-rm"]="Remove $BUILD_DIR/gw directory."
+HELP["gw-rm"]="Remove \$BUILD_DIR/gw directory."
 gw_rm() {
   rm -rf "$BUILD_DIR/gw"
 }
 
 
-HELP["bootbin"]="Generate boot.bin file to the $BUILD_DIR directory."
+HELP["bootbin"]="Generate boot.bin file to the \$BUILD_DIR directory."
 bootbin() {
   bootgen -arch zynq -image config/zturn.bif -w on -o "$BUILD_DIR/boot.bin"
 }
@@ -120,7 +120,7 @@ br() {
 }
 
 
-HELP["br-setup"]="Set up Buildroot for rootfs compilation in the $BUILD_DIR directory.
+HELP["br-setup"]="Set up Buildroot for rootfs compilation in the \$BUILD_DIR directory.
 \nThe command automatically links .config to the valid configuration.
 The command does not start any compilation implicitly.
 You must explicitly cd to the Buildroot diretory and call make."
@@ -197,7 +197,8 @@ linux_update_defconfig() {
   cd "$PROJECT_DIR"
 }
 
-HELP["linux-setup"]="Set up Linux for compilation in the $BUILD_DIR directory.
+
+HELP["linux-setup"]="Set up Linux for compilation in the \$BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
 linux_setup() {
@@ -228,12 +229,65 @@ linux_setup() {
   cd "$PROJECT_DIR"
 }
 
+
 HELP["linux-mods-install"]="Install Linux modules to the Buildroot overlay directory.
 The command does not trigger modules (re)compilation process."
 linux_mods_install() {
   cd "$KERNELDIR"
 
   INSTALL_MOD_PATH="$PROJECT_DIR/br/overlay" make modules_install
+
+  cd "$PROJECT_DIR"
+}
+
+
+HELP["uboot"]="Cd to U-Boot directory and execute args.
+\nUsage:
+  ./do uboot args
+
+The command sets up the Linux (yes Linux) environment before executing args.
+If the u-boot directory does not exist, it first calls the 'uboot-setup' command."
+uboot() {
+  if [ $# -lt 1 ]; then
+    die "missing args, check './do help linux'"
+  fi
+
+  if [ ! -d "$BUILD_DIR/$UBOOT_DIR_NAME" ]; then
+    uboot_setup
+  fi
+
+  cd "$BUILD_DIR/$UBOOT_DIR_NAME"
+  # shellcheck source=/dev/null
+  source ../../scripts/linux-setup-env.sh
+  "$@"
+
+  cd "$PROJECT_DIR"
+}
+
+
+
+HELP["uboot-setup"]="Set up U-Boot for compilation in the \$BUILD_DIR directory.
+The command does not start any compilation implicitly.
+You must explicitly cd to the u-boot diretory and call make."
+uboot_setup() {
+  local url_branch_dir="$UBOOT_URL/$UBOOT_BRANCH"
+
+  mkdir -p "$CACHE_DIR"
+  cd "$CACHE_DIR"
+  if [ ! -e "$url_branch_dir/$UBOOT_DIR_NAME" ]; then
+    mkdir -p $url_branch_dir
+    cd $url_branch_dir
+    git clone --branch "$UBOOT_BRANCH" --depth 1 "$UBOOT_URL"
+  fi
+
+  mkdir -p "$BUILD_DIR"
+  cd "$BUILD_DIR"
+  cp -r "$CACHE_DIR/$url_branch_dir/$UBOOT_DIR_NAME" .
+
+  cd "$UBOOT_DIR_NAME/configs"
+  ln -s "$PROJECT_DIR/config/uboot.conf" zturn_defconfig
+  cd ..
+  make zturn_defconfig
 
   cd "$PROJECT_DIR"
 }
