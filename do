@@ -109,7 +109,7 @@ br() {
     die "missing args, check './do help br'"
   fi
 
-  if [ ! -d "./$BUILD_DIR/buildroot-$BUILDROOT_VERSION" ]; then
+  if [ ! -d "$BUILD_DIR/buildroot-$BUILDROOT_VERSION" ]; then
     br_setup
   fi
 
@@ -128,8 +128,8 @@ br_setup() {
   local buildroot_tar="buildroot-$BUILDROOT_VERSION.tar.gz"
   local buildroot_dir="buildroot-$BUILDROOT_VERSION"
 
-  mkdir -p cache
-  cd cache
+  mkdir -p "$CACHE_DIR"
+  cd "$CACHE_DIR"
   if [ ! -e "$buildroot_tar" ]; then
     wget "https://buildroot.org/downloads/$buildroot_tar"
   fi
@@ -139,7 +139,7 @@ br_setup() {
   cd "$BUILD_DIR"
 
   if [ ! -d "$buildroot_dir" ]; then
-    tar -xvf "../cache/$buildroot_tar"
+    tar -xvf "$CACHE_DIR/$buildroot_tar"
   fi
 
   cd "$buildroot_dir"
@@ -176,11 +176,11 @@ linux() {
     die "missing args, check './do help linux'"
   fi
 
-  if [ ! -d "$BUILD_DIR/$LINUX_DIR" ]; then
+  if [ ! -d "$KERNELDIR" ]; then
     linux_setup
   fi
 
-  cd "$BUILD_DIR/$LINUX_DIR"
+  cd "$KERNELDIR"
   # shellcheck source=/dev/null
   source ../../scripts/linux-setup-env.sh
   "$@"
@@ -192,9 +192,9 @@ linux() {
 HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/linux.conf).
 The command runs 'make savedefconfig' in the Linux directory, and copies the defconfig file to the ./config directory."
 linux_update_defconfig() {
-  cd "$BUILD_DIR/$LINUX_DIR"
+  cd "$KERNELDIR"
   make savedefconfig
-  cp defconfig ../../config/linux.conf
+  cp defconfig "$PROJECT_DIR/config/linux.conf"
   cd "$PROJECT_DIR"
 }
 
@@ -207,7 +207,7 @@ linux_setup() {
   git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
 
   # Attach project related drivers
-  cd "$LINUX_DIR/drivers"
+  cd "$KERNELDIR/drivers"
   ln -s ../../../fw/examples/drivers/ zturn
   sed -i '2a source "drivers/zturn/Kconfig"' Kconfig
   echo "obj-y += zturn/" >> Makefile
@@ -224,7 +224,7 @@ linux_setup() {
 HELP["linux-mods-install"]="Install Linux modules to the Buildroot overlay directory.
 The command does not trigger modules (re)compilation process."
 linux_mods_install() {
-  cd "$BUILD_DIR/$LINUX_DIR"
+  cd "$KERNELDIR"
 
   INSTALL_MOD_PATH="$PROJECT_DIR/br/overlay" make modules_install
 
