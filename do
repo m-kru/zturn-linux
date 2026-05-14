@@ -202,17 +202,19 @@ HELP["linux-setup"]="Set up Linux for compilation in the \$BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
 linux_setup() {
+  local url_branch_dir="${LINUX_URL//\//_}/$LINUX_BRANCH"
+
   mkdir -p "$CACHE_DIR"
   cd "$CACHE_DIR"
-  if [ ! -e "$LINUX_URL/$LINUX_BRANCH/$LINUX_DIR_NAME" ]; then
-    mkdir -p "$LINUX_URL/$LINUX_BRANCH"
-    cd "$LINUX_URL/$LINUX_BRANCH"
+  if [ ! -e "$url_branch_dir/$LINUX_DIR_NAME" ]; then
+    mkdir -p "$url_branch_dir"
+    cd "$url_branch_dir"
     git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
   fi
 
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
-  cp -r "$CACHE_DIR/$LINUX_URL/$LINUX_BRANCH/$LINUX_DIR_NAME" .
+  cp -r "$CACHE_DIR/$url_branch_dir/$LINUX_DIR_NAME" .
 
   # Attach project related drivers
   cd "$KERNELDIR/drivers"
@@ -270,7 +272,7 @@ HELP["uboot-setup"]="Set up U-Boot for compilation in the \$BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the u-boot diretory and call make."
 uboot_setup() {
-  local url_branch_dir="$UBOOT_URL/$UBOOT_BRANCH"
+  local url_branch_dir="${UBOOT_URL//\//_}/$UBOOT_BRANCH"
 
   mkdir -p "$CACHE_DIR"
   cd "$CACHE_DIR"
