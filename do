@@ -133,7 +133,6 @@ br_setup() {
   if [ ! -e "$buildroot_tar" ]; then
     wget "https://buildroot.org/downloads/$buildroot_tar"
   fi
-  cd ..
 
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
@@ -202,9 +201,17 @@ HELP["linux-setup"]="Set up Linux for compilation in the $BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
 linux_setup() {
+  mkdir -p "$CACHE_DIR"
+  cd "$CACHE_DIR"
+  if [ ! -e "$LINUX_URL/$LINUX_BRANCH/$LINUX_DIR_NAME" ]; then
+    mkdir -p "$LINUX_URL/$LINUX_BRANCH"
+    cd "$LINUX_URL/$LINUX_BRANCH"
+    git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
+  fi
+
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
-  git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
+  cp -r "$CACHE_DIR/$LINUX_URL/$LINUX_BRANCH/$LINUX_DIR_NAME" .
 
   # Attach project related drivers
   cd "$KERNELDIR/drivers"
@@ -214,9 +221,9 @@ linux_setup() {
 
   cd ..
   # shellcheck source=/dev/null
-  source ../../scripts/linux-setup-env.sh
+  source "$PROJECT_DIR/scripts/linux-setup-env.sh"
   make xilinx_zynq_defconfig
-  ./scripts/kconfig/merge_config.sh .config ../../config/linux.conf
+  ./scripts/kconfig/merge_config.sh .config "$PROJECT_DIR/config/linux.conf"
 
   cd "$PROJECT_DIR"
 }
