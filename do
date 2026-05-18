@@ -162,8 +162,8 @@ br_setup() {
   mkdir -p "$CACHE_DIR"
   cd "$CACHE_DIR"
   if [ ! -e "$url_branch_dir/$BUILDROOT_DIR_NAME" ]; then
-    mkdir -p $url_branch_dir
-    cd $url_branch_dir
+    mkdir -p "$url_branch_dir"
+    cd "$url_branch_dir"
     git clone --branch "$BUILDROOT_BRANCH" --depth 1 "$BUILDROOT_URL"
   fi
 
@@ -284,7 +284,7 @@ uboot() {
     die "missing args, check './do help linux'"
   fi
 
-  if [ ! -d "$BUILD_DIR/$UBOOT_DIR_NAME" ]; then
+  if [ ! -d "$UBOOT_DIR" ]; then
     uboot_setup
   fi
 
@@ -307,8 +307,8 @@ uboot_setup() {
   mkdir -p "$CACHE_DIR"
   cd "$CACHE_DIR"
   if [ ! -e "$url_branch_dir/$UBOOT_DIR_NAME" ]; then
-    mkdir -p $url_branch_dir
-    cd $url_branch_dir
+    mkdir -p "$url_branch_dir"
+    cd "$url_branch_dir"
     git clone --branch "$UBOOT_BRANCH" --depth 1 "$UBOOT_URL"
   fi
 
