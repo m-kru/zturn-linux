@@ -99,6 +99,38 @@ sd_cp() {
 }
 
 
+HELP["sd-cp-all"]="Copy all required files to the provided SD card partition.
+\nUsage:
+  ./do sd-cp args partition\n
+The command automatically mounts and unmounts the partition using the pmount command.
+The args are passed as is to the cp command.
+
+Example:
+  do sd-cp-all $BUILD_DIR/boot.bin sda1"
+sd_cp_all() {
+  if [ $# -lt 1 ]; then
+    die "missing partition argument"
+  fi
+
+  readonly part=${!#}
+  pmount "/dev/$part"
+  set -- "${@:1:$#-1}"
+
+  cp "$@" "$BUILD_DIR/boot.bin" "/media/$part"
+  cp "$@" "$BUILD_DIR/boot.scr" "/media/$part"
+  cp "$@" "$BUILD_DIR/system.dtbo" "/media/$part"
+
+  cp "$@" "$KERNELDIR/arch/arm/boot/zImage" "/media/$part"
+  cp "$@" "$KERNELDIR/arch/arm/boot/dts/xilinx/zynq-zturn-v5.dtb" "/media/$part"
+
+  cp "$@" "$BUILDROOT_DIR/output/images/rootfs.cpio" "/media/$part"
+
+  pumount "/dev/$part"
+}
+
+
+
+
 HELP["br"]="Cd to Buildroot directory and execute args.
 \nUsage:
   ./do br args
@@ -225,8 +257,8 @@ linux_setup() {
   cd ..
   # shellcheck source=/dev/null
   source "$PROJECT_DIR/scripts/linux-setup-env.sh"
-  make xilinx_zynq_defconfig
-  ./scripts/kconfig/merge_config.sh .config "$PROJECT_DIR/config/linux.conf"
+  cp "$PROJECT_DIR/config/linux.conf" .conf
+  make olddefconfig
 
   cd "$PROJECT_DIR"
 }
@@ -286,10 +318,9 @@ uboot_setup() {
   cd "$BUILD_DIR"
   cp -r "$CACHE_DIR/$url_branch_dir/$UBOOT_DIR_NAME" .
 
-  cd "$UBOOT_DIR_NAME/configs"
-  ln -s "$PROJECT_DIR/config/uboot.conf" zturn_defconfig
-  cd ..
-  make zturn_defconfig
+  cd "$UBOOT_DIR_NAME"
+  cp "$PROJECT_DIR/config/uboot.conf" .config
+  make olddefconfig
 
   cd "$PROJECT_DIR"
 }

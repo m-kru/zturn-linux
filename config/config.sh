@@ -34,3 +34,5 @@ UBOOT_DIR_NAME=u-boot
 
 # The variable name is KERNELDIR, not KDIR or KERNEL_DIR, to keep compatibility with Buildroot.
 KERNELDIR="$BUILD_DIR/$LINUX_DIR_NAME"
+
+BUILDROOT_DIR="$BUILD_DIR/buildroot-$BUILDROOT_VERSION"

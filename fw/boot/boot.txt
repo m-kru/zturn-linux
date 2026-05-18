@@ -7,7 +7,7 @@ echo "loading kernel image"
 fatload mmc 0:1 ${krnl_addr_r} zImage
 
 echo "loading device tree"
-fatload mmc 0:1 ${fdt_addr_r} system.dtb
+fatload mmc 0:1 ${fdt_addr_r} zynq-zturn-v5.dtb
 
 echo "loading device tree overlay"
 fatload mmc 0:1 ${overlay_addr_r} system.dtbo
