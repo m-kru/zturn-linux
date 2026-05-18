@@ -15,7 +15,10 @@ BUILD_DIR="$PROJECT_DIR/build"
 
 CACHE_DIR="$PROJECT_DIR/cache"
 
-BUILDROOT_VERSION=2026.02.1
+BUILDROOT_URL="https://gitlab.com/buildroot.org/buildroot/"
+# Buildroot branch or tag name to be downloaded.
+BUILDROOT_BRANCH=2026.02.1
+BUILDROOT_DIR_NAME=buildroot
 
 LINUX_URL="org-3189299@github.com:Xilinx/linux-xlnx.git"
 # Linux branch or tag name to be downloaded.
@@ -32,7 +35,9 @@ UBOOT_DIR_NAME=u-boot
 # Derived variables
 #
 
+BUILDROOT_DIR="$BUILD_DIR/$BUILDROOT_DIR_NAME"
+
 # The variable name is KERNELDIR, not KDIR or KERNEL_DIR, to keep compatibility with Buildroot.
 KERNELDIR="$BUILD_DIR/$LINUX_DIR_NAME"
 
-BUILDROOT_DIR="$BUILD_DIR/buildroot-$BUILDROOT_VERSION"
+UBOOT_DIR="$BUILD_DIR/$UBOOT_DIR_NAME"

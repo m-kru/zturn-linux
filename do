@@ -141,11 +141,11 @@ br() {
     die "missing args, check './do help br'"
   fi
 
-  if [ ! -d "$BUILD_DIR/buildroot-$BUILDROOT_VERSION" ]; then
+  if [ ! -d "$BUILDROOT_DIR" ]; then
     br_setup
   fi
 
-  cd "$BUILD_DIR/buildroot-$BUILDROOT_VERSION"
+  cd "$BUILDROOT_DIR"
   "$@"
 
   cd "$PROJECT_DIR"
@@ -157,24 +157,22 @@ HELP["br-setup"]="Set up Buildroot for rootfs compilation in the \$BUILD_DIR dir
 The command does not start any compilation implicitly.
 You must explicitly cd to the Buildroot diretory and call make."
 br_setup() {
-  local buildroot_tar="buildroot-$BUILDROOT_VERSION.tar.gz"
-  local buildroot_dir="buildroot-$BUILDROOT_VERSION"
+  local url_branch_dir="${BUILDROOT_URL//\//_}/$BUILDROOT_BRANCH"
 
   mkdir -p "$CACHE_DIR"
   cd "$CACHE_DIR"
-  if [ ! -e "$buildroot_tar" ]; then
-    wget "https://buildroot.org/downloads/$buildroot_tar"
+  if [ ! -e "$url_branch_dir/$BUILDROOT_DIR_NAME" ]; then
+    mkdir -p $url_branch_dir
+    cd $url_branch_dir
+    git clone --branch "$BUILDROOT_BRANCH" --depth 1 "$BUILDROOT_URL"
   fi
 
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
+  cp -r "$CACHE_DIR/$url_branch_dir/$BUILDROOT_DIR_NAME" .
 
-  if [ ! -d "$buildroot_dir" ]; then
-    tar -xvf "$CACHE_DIR/$buildroot_tar"
-  fi
-
-  cd "$buildroot_dir"
-  BR2_EXTERNAL=../../br BR2_DEFCONFIG=../../config/buildroot.conf make defconfig
+  cd "$BUILDROOT_DIR_NAME"
+  BR2_EXTERNAL="$PROJECT_DIR/br" BR2_DEFCONFIG="$PROJECT_DIR/config/buildroot.conf" make defconfig
 
   cd "$PROJECT_DIR"
 }
