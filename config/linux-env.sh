@@ -10,6 +10,6 @@ export DTC_FLAGS="-@"
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 
 # shellcheck source=/dev/null
-source "$(dirname "$SCRIPT_DIR")/config/config.sh"
+source "$SCRIPT_DIR/config.sh"
 
 export "KERNELDIR=$KERNELDIR"

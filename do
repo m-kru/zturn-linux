@@ -201,6 +201,10 @@ HELP["linux"]="Cd to Linux directory and execute args.
 The command sets up the Linux environment before executing args.
 If the linux directory does not exist, it first calls the 'linux-setup' command."
 linux() {
+  if [ -z "${ARCH+x}" ]; then
+    die "ARCH environment variable not set"
+  fi
+
   if [ $# -lt 1 ]; then
     die "missing args, check './do help linux'"
   fi
@@ -210,20 +214,18 @@ linux() {
   fi
 
   cd "$KERNELDIR"
-  # shellcheck source=/dev/null
-  source ../../scripts/linux-setup-env.sh
   "$@"
 
   cd "$PROJECT_DIR"
 }
 
 
-HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/linux.conf).
+HELP["linux-update-defconfig"]="Update Linux default configuration file (./config/kernel.conf).
 The command runs 'make savedefconfig' in the Linux directory, and copies the defconfig file to the ./config directory."
 linux_update_defconfig() {
   cd "$KERNELDIR"
   make savedefconfig
-  cp defconfig "$PROJECT_DIR/config/linux.conf"
+  cp defconfig "$PROJECT_DIR/config/kernel.conf"
   cd "$PROJECT_DIR"
 }
 
@@ -254,8 +256,8 @@ linux_setup() {
 
   cd ..
   # shellcheck source=/dev/null
-  source "$PROJECT_DIR/scripts/linux-setup-env.sh"
-  cp "$PROJECT_DIR/config/linux.conf" .conf
+  source "$PROJECT_DIR/config/linux-env.sh"
+  cp "$PROJECT_DIR/config/kernel.conf" .conf
   make olddefconfig
 
   cd "$PROJECT_DIR"
@@ -280,6 +282,10 @@ HELP["uboot"]="Cd to U-Boot directory and execute args.
 The command sets up the Linux (yes Linux) environment before executing args.
 If the u-boot directory does not exist, it first calls the 'uboot-setup' command."
 uboot() {
+  if [ -z "${ARCH+x}" ]; then
+    die "ARCH environment variable not set"
+  fi
+
   if [ $# -lt 1 ]; then
     die "missing args, check './do help linux'"
   fi
@@ -290,7 +296,7 @@ uboot() {
 
   cd "$BUILD_DIR/$UBOOT_DIR_NAME"
   # shellcheck source=/dev/null
-  source ../../scripts/linux-setup-env.sh
+  source "$PROJECT_DIR/config/linux-env.sh"
   "$@"
 
   cd "$PROJECT_DIR"
