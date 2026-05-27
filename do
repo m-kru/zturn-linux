@@ -329,6 +329,17 @@ uboot_setup() {
   cd "$PROJECT_DIR"
 }
 
+
+HELP["uboot-update-defconfig"]="Update U-Boot default configuration file (./config/uboot.conf).
+The command runs 'make savedefconfig' in the U-Boot directory, and copies the defconfig file to the ./config directory."
+uboot_update_defconfig() {
+  cd "$BUILD_DIR/$UBOOT_DIR_NAME"
+  make savedefconfig
+  cp defconfig "$PROJECT_DIR/config/uboot.conf"
+  cd "$PROJECT_DIR"
+}
+
+
 #
 # Start of script logic
 #
