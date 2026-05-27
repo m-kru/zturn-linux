@@ -131,7 +131,7 @@ sd_cp_all() {
 
 
 
-HELP["br"]="Cd to Buildroot directory and execute args.
+HELP["br"]="Cd to \$BUILD_DIR/buildroot directory and execute args.
 \nUsage:
   ./do br args
 
@@ -275,7 +275,7 @@ linux_mods_install() {
 }
 
 
-HELP["uboot"]="Cd to U-Boot directory and execute args.
+HELP["uboot"]="Cd to \$BUILD_DIR/u-boot directory and execute args.
 \nUsage:
   ./do uboot args
 
