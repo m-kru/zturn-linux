@@ -9,9 +9,31 @@ source ./config/config.sh
 # Utility functions
 #
 
+# Prints an error message and exits with exit status 1.
 die() {
   echo >&2 "$*"
   exit 1
+}
+
+# Clones git repository to cache, if not yet cloned.
+# Returns absolute path to the cloned repository directory.
+git_clone_to_cache() {
+  local url="$1"
+  local branch="$2"
+  local dir_name="$3"
+
+  local url_branch_dir="${url//\//_}/$branch"
+
+  mkdir -p "$CACHE_DIR"
+  cd "$CACHE_DIR"
+
+  mkdir -p "$url_branch_dir"
+  cd "$url_branch_dir"
+  if [ ! -e "$dir_name" ]; then
+    git clone --branch "$branch" --depth 1 "$url"
+  fi
+
+  echo "$CACHE_DIR/$url_branch_dir/$dir_name"
 }
 
 #
@@ -157,19 +179,12 @@ HELP["br-setup"]="Set up Buildroot for rootfs compilation in the \$BUILD_DIR dir
 The command does not start any compilation implicitly.
 You must explicitly cd to the Buildroot diretory and call make."
 br_setup() {
-  local url_branch_dir="${BUILDROOT_URL//\//_}/$BUILDROOT_BRANCH"
-
-  mkdir -p "$CACHE_DIR"
-  cd "$CACHE_DIR"
-  if [ ! -e "$url_branch_dir/$BUILDROOT_DIR_NAME" ]; then
-    mkdir -p "$url_branch_dir"
-    cd "$url_branch_dir"
-    git clone --branch "$BUILDROOT_BRANCH" --depth 1 "$BUILDROOT_URL"
-  fi
+  local br_cache_dir
+  br_cache_dir=$(git_clone_to_cache "$BUILDROOT_URL" "$BUILDROOT_BRANCH" "$BUILDROOT_DIR_NAME")
 
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
-  cp -r "$CACHE_DIR/$url_branch_dir/$BUILDROOT_DIR_NAME" .
+  cp -r "$br_cache_dir" .
 
   cd "$BUILDROOT_DIR_NAME"
   BR2_EXTERNAL="$PROJECT_DIR/br" BR2_DEFCONFIG="$PROJECT_DIR/config/buildroot.conf" make defconfig
@@ -234,19 +249,12 @@ HELP["linux-setup"]="Set up Linux for compilation in the \$BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the linux diretory and call make."
 linux_setup() {
-  local url_branch_dir="${LINUX_URL//\//_}/$LINUX_BRANCH"
-
-  mkdir -p "$CACHE_DIR"
-  cd "$CACHE_DIR"
-  if [ ! -e "$url_branch_dir/$LINUX_DIR_NAME" ]; then
-    mkdir -p "$url_branch_dir"
-    cd "$url_branch_dir"
-    git clone --branch "$LINUX_BRANCH" --depth 1 "$LINUX_URL"
-  fi
+  local linux_cache_dir
+  linux_cache_dir=$(git_clone_to_cache "$LINUX_URL" "$LINUX_BRANCH" "$LINUX_DIR_NAME")
 
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
-  cp -r "$CACHE_DIR/$url_branch_dir/$LINUX_DIR_NAME" .
+  cp -r "$linux_cache_dir" .
 
   # Attach project related drivers
   cd "$KERNELDIR/drivers"
@@ -308,19 +316,12 @@ HELP["uboot-setup"]="Set up U-Boot for compilation in the \$BUILD_DIR directory.
 The command does not start any compilation implicitly.
 You must explicitly cd to the u-boot diretory and call make."
 uboot_setup() {
-  local url_branch_dir="${UBOOT_URL//\//_}/$UBOOT_BRANCH"
-
-  mkdir -p "$CACHE_DIR"
-  cd "$CACHE_DIR"
-  if [ ! -e "$url_branch_dir/$UBOOT_DIR_NAME" ]; then
-    mkdir -p "$url_branch_dir"
-    cd "$url_branch_dir"
-    git clone --branch "$UBOOT_BRANCH" --depth 1 "$UBOOT_URL"
-  fi
+  local uboot_cache_dir
+  uboot_cache_dir=$(git_clone_to_cache "$UBOOT_URL" "$UBOOT_BRANCH" "$UBOOT_DIR_NAME")
 
   mkdir -p "$BUILD_DIR"
   cd "$BUILD_DIR"
-  cp -r "$CACHE_DIR/$url_branch_dir/$UBOOT_DIR_NAME" .
+  cp -r "$uboot_cache_dir" .
 
   cd "$UBOOT_DIR_NAME"
   cp "$PROJECT_DIR/config/uboot.conf" .config
