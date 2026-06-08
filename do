@@ -283,7 +283,7 @@ linux_mods_install() {
 }
 
 
-HELP["uboot"]="Cd to \$BUILD_DIR/u-boot directory and execute args.
+HELP["uboot"]="Cd to \$BUILD_DIR/\$UBOOT_DIR_NAME directory and execute args.
 \nUsage:
   ./do uboot args
 
@@ -295,7 +295,7 @@ uboot() {
   fi
 
   if [ $# -lt 1 ]; then
-    die "missing args, check './do help linux'"
+    die "missing args, check './do help uboot'"
   fi
 
   if [ ! -d "$UBOOT_DIR" ]; then
