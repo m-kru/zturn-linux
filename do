@@ -265,7 +265,7 @@ linux_setup() {
   sed -i '2a source "drivers/zturn/Kconfig"' Kconfig
   echo "obj-y += zturn/" >> Makefile
 
-  cd ..
+  cd "$KERNELDIR"
   # shellcheck source=/dev/null
   source "$PROJECT_DIR/config/linux-env.sh"
   cp "$PROJECT_DIR/config/kernel.conf" .conf
