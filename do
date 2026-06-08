@@ -268,7 +268,7 @@ linux_setup() {
   cd "$KERNELDIR"
   # shellcheck source=/dev/null
   source "$PROJECT_DIR/config/linux-env.sh"
-  cp "$PROJECT_DIR/config/kernel.conf" .conf
+  cp "$PROJECT_DIR/config/kernel.conf" .config
   make olddefconfig
 
   cd "$PROJECT_DIR"
