@@ -153,7 +153,7 @@ sd_cp_all() {
 
 
 
-HELP["br"]="Cd to \$BUILD_DIR/buildroot directory and execute args.
+HELP["br"]="Cd to \$BUILD_DIR/\$BR_DIR_NAME directory and execute args.
 \nUsage:
   ./do br args
 
@@ -213,8 +213,11 @@ HELP["linux"]="Cd to Linux directory and execute args.
 \nUsage:
   ./do linux args
 
-The command sets up the Linux environment before executing args.
-If the linux directory does not exist, it first calls the 'linux-setup' command."
+If the Linux directory does not exist, it first calls the 'linux-setup' command.
+
+The command does not set up the Linux environment before executing args.
+You must set up the proper compilation environment explicitly.
+Probably, you just want to source the ./config/linux-env.sh script."
 linux() {
   if [ -z "${ARCH+x}" ]; then
     die "ARCH environment variable not set"
@@ -287,8 +290,11 @@ HELP["uboot"]="Cd to \$BUILD_DIR/\$UBOOT_DIR_NAME directory and execute args.
 \nUsage:
   ./do uboot args
 
-The command sets up the Linux (yes Linux) environment before executing args.
-If the u-boot directory does not exist, it first calls the 'uboot-setup' command."
+If the u-boot directory does not exist, it first calls the 'uboot-setup' command.
+
+The command does not set up the Linux (yes Linux) environment before executing args.
+You must set up the proper compilation environment explicitly.
+Probably, you just want to source the ./config/linux-env.sh script."
 uboot() {
   if [ -z "${ARCH+x}" ]; then
     die "ARCH environment variable not set"
@@ -303,8 +309,6 @@ uboot() {
   fi
 
   cd "$BUILD_DIR/$UBOOT_DIR_NAME"
-  # shellcheck source=/dev/null
-  source "$PROJECT_DIR/config/linux-env.sh"
   "$@"
 
   cd "$PROJECT_DIR"
